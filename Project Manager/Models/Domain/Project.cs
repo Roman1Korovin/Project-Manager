@@ -22,6 +22,6 @@
         public Employee Manager { get; set; } = null!;
 
         //Collection of employees who work on Project 
-        public ICollection<EmployeeOnProject> Employees { get; set; } = new List<EmployeeOnProject>();
+        public ICollection<EmployeeOnProject> EmployeesOnProject { get; set; } = new List<EmployeeOnProject>();
     }
 }

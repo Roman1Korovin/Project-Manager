@@ -1,7 +1,16 @@
+using Microsoft.EntityFrameworkCore;
+using Project_Manager.Extensions;
+
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDataAccess(builder.Configuration);
+
+
 
 var app = builder.Build();
 

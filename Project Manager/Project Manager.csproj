@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Project_Manager</RootNamespace>
+    <UserSecretsId>4ccf9699-3058-4127-b52c-c1c1e415d157</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,7 +4,7 @@ using System.Reflection.Emit;
 
 namespace Project_Manager.Data
 {
-    public class AppContext(DbContextOptions<AppContext> options) : DbContext(options)
+    public class AppContextDB(DbContextOptions<AppContextDB> options) : DbContext(options)
     {
         //Use DbSet to specify which entities will be store in DB 
         public DbSet<Project> Projects { get; set; } = null!;
@@ -77,6 +77,7 @@ namespace Project_Manager.Data
             //Priority must always be from 1 to 5
             modelBuilder.Entity<Project>()
                 .ToTable(t => t.HasCheckConstraint("CK_Project_Priority", "[Priority] BETWEEN 1 AND 5"));
+
 
             modelBuilder.Entity<CustomerCompany>()
                 .Property(c => c.Name)

@@ -8,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+
+//Registering DbContext to work with DB via DI
 builder.Services.AddDataAccess(builder.Configuration);
 
 

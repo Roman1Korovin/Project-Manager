@@ -70,6 +70,10 @@ namespace Project_Manager.Data
                 .IsRequired();
 
             modelBuilder.Entity<Project>()
+                .Property(p => p.EndDate)
+                .IsRequired();
+
+            modelBuilder.Entity<Project>()
                 .Property(p => p.Priority)
                 .IsRequired();
 

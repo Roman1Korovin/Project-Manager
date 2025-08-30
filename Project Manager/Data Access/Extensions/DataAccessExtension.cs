@@ -1,13 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Project_Manager.Data;
 using Project_Manager.Data_Access.Repositories;
 using Project_Manager.Data_Access.Repositories.Interfaces;
 using System.Runtime.CompilerServices;
 
-namespace Project_Manager.Extensions
+namespace Project_Manager.Data_Access.Extensions
 {
-    public static class ServiceCollectionExtension
+    public static class DataAccessExtension
     {
         public static IServiceCollection AddDataAccess(this IServiceCollection serviceCollection, IConfiguration configuration)
         {

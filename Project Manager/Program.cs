@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Project_Manager.Extensions;
+using Project_Manager.Data_Access.Extensions;
+using Project_Manager.BusinessLogic.Extensions;
 
 
 
@@ -11,6 +12,7 @@ builder.Services.AddControllersWithViews();
 
 //Registering DbContext to work with DB via DI
 builder.Services.AddDataAccess(builder.Configuration);
+builder.Services.AddBusinessLogic();
 
 
 

@@ -2,7 +2,7 @@
 using Project_Manager.Models.Domain;
 using System.Reflection.Emit;
 
-namespace Project_Manager.Data
+namespace Project_Manager.Data_Access
 {
     public class AppContextDB(DbContextOptions<AppContextDB> options) : DbContext(options)
     {

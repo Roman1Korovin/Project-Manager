@@ -12,7 +12,10 @@ builder.Services.AddControllersWithViews();
 
 //Registering DbContext to work with DB via DI
 builder.Services.AddDataAccess(builder.Configuration);
+
 builder.Services.AddBusinessLogic();
+
+builder.Services.AddSwaggerGen();
 
 
 
@@ -36,5 +39,11 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+//Connect routing to Web API controllers
+app.MapControllers();
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.Run();

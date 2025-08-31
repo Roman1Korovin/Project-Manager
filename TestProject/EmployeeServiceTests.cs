@@ -10,7 +10,7 @@ using Project_Manager.Models.Domain;
 using Project_Manager.DTOs;
 
 
-namespace Tests
+namespace TestsProject
 {
     public class EmployeeServiceTests
     {

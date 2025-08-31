@@ -9,6 +9,7 @@ namespace Project_Manager.BusinessLogic.Extensions
         {
 
             serviceCollection.AddScoped<IEmployeeService, EmployeeService>();
+            serviceCollection.AddScoped<IProjectService, ProjectService>();
             return serviceCollection;
         }
     }

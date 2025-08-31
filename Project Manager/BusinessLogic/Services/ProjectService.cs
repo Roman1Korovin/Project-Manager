@@ -40,7 +40,7 @@ namespace Project_Manager.BusinessLogic.Services
             // Check that manager(employee) with current Id is exists
             var manager = await employeeRepository.GetByIdAsync(dto.ManagerID, cancellationToken);
             if (manager == null)
-                throw new KeyNotFoundException($"Сотрудник с Id {dto.ManagerID} не найден.");
+                throw new KeyNotFoundException($"Менеджер с Id {dto.ManagerID} не найден.");
 
             // Check that customerCompany with current Id is exists
             var customer = await customerCompanyRepository.GetByIdAsync(dto.CustomerCompanyID, cancellationToken);

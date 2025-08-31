@@ -1,4 +1,5 @@
-﻿using Project_Manager.Data_Access.Repositories.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using Project_Manager.Data_Access.Repositories.Interfaces;
 using Project_Manager.Models.Domain;
 
 namespace Project_Manager.Data_Access.Repositories
@@ -7,8 +8,38 @@ namespace Project_Manager.Data_Access.Repositories
     {
         public async Task AddAsync(EmployeeOnProject employeeOnProject, CancellationToken cancellationToken = default)
         {
-            await context.EmployeeOnProjects.AddAsync(employeeOnProject);     //Add CustomerCompany object to context 
-            await context.SaveChangesAsync();    //Save changes to BD
+            await context.EmployeeOnProjects.AddAsync(employeeOnProject,cancellationToken);     //Add EmployeeOnProject object to context 
+            await context.SaveChangesAsync(cancellationToken);    //Save changes to BD
+        }
+
+        public async Task DeleteAsync(EmployeeOnProject employeeOnProject, CancellationToken cancellationToken = default)
+        {
+            context.EmployeeOnProjects.Remove(employeeOnProject);
+            await context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async  Task<List<EmployeeOnProject>> GetByEmployeeIdAsync(int employeeId, CancellationToken cancellationToken = default)
+        {
+            return await context.EmployeeOnProjects
+                .Where(ep => ep.EmployeeId == employeeId)
+                .Include(ep => ep.Project)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<List<EmployeeOnProject>> GetByProjectIdAsync(int projectId, CancellationToken cancellationToken = default)
+        {
+            return await context.EmployeeOnProjects
+                .Where(ep => ep.ProjectId == projectId)
+                .Include(ep => ep.Employee)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<EmployeeOnProject?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            return await context.EmployeeOnProjects
+                 .Include(ep => ep.Project)
+                 .Include(ep => ep.Employee)
+                 .FirstOrDefaultAsync(ep => ep.Id == id, cancellationToken);
         }
     }
 }

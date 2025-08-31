@@ -19,6 +19,10 @@ namespace Project_Manager.Controllers
                 await projectService.AddAsync(dto);
                 return Ok();    // Return 200 OK if successful
             }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);  //Return 404 Not Found if Manager(Employee),CustomerCompany or ExecutorCompany with specified Id doesnt found
+            }
             catch (Exception ex)
             {
 
@@ -30,7 +34,7 @@ namespace Project_Manager.Controllers
         public async Task<IActionResult> GettAllAsync()
         {
             var projects = await projectService.GetAllAsync();
-            return Ok(projects);   // Return 200 OK if successful
+            return Ok(projects);   
         }
 
         // PUT api/project/{id}

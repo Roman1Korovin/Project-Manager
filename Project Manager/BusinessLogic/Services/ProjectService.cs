@@ -20,11 +20,11 @@ namespace Project_Manager.BusinessLogic.Services
             if (string.IsNullOrWhiteSpace(dto.Name))
                 throw new ArgumentNullException("Название проекта не может быть пустым!", nameof(dto.Name));
 
-            //Validate that name is more than 500 symbols 
+            //Validate that name is not more than 500 symbols 
             if (dto.Name.Length > 500)
                 throw new ArgumentException("Название проекта не может превышать 500 символов!", nameof(dto.Name));
 
-            //Validate that StartDate is later than EndDate 
+            //Validate that StartDate is not later than EndDate 
             if (dto.StartDate > dto.EndDate)
                 throw new InvalidOperationException("Дата начала проекта не может быть позднее даты окончания проекта!");
 

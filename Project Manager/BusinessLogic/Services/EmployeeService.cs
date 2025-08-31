@@ -15,7 +15,7 @@ namespace Project_Manager.BusinessLogic.Services
             if (string.IsNullOrWhiteSpace(fullname))
                 throw new ArgumentNullException("ФИО сотрудника не может быть пустым!", nameof(fullname));
 
-            //Validate that fullName is more than 500 symbols 
+            //Validate that fullName is not more than 500 symbols 
             if (fullname.Length > 500)
                 throw new ArgumentException("ФИО сотрудника не может превышать 500 символов!", nameof(fullname));
 
@@ -23,7 +23,7 @@ namespace Project_Manager.BusinessLogic.Services
             if (string.IsNullOrWhiteSpace(email))
                 throw new ArgumentNullException("Email сотрудника не может быть пустым!", nameof(email));
 
-            //Validate that email is more than 500 symbols 
+            //Validate that email is not more than 500 symbols 
             if (email.Length > 500)
                 throw new ArgumentException("Email сотрудника не может превышать 500 символов!", nameof(email));
 

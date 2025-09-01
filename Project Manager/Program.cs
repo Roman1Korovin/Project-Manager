@@ -38,7 +38,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=ProjectRazor}/{action=Index}/{id?}");
+    pattern: "{controller=ProjectMvc}/{action=Index}/{id?}");
 
 //Connect routing to Web API controllers
 app.MapControllers();

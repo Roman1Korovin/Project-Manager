@@ -39,6 +39,20 @@ namespace Project_Manager.BusinessLogic.Services
             return employees.Select(e => new EmployeeDTO {Id = e.Id, FullName = e.FullName, Email = e.Email }).ToList();
         }
 
+        public async Task<EmployeeDTO> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            // Check that Employee with current Id is exists
+            var employee = await employeeRepository.GetByIdAsync(id, cancellationToken);
+            if (employee == null)
+                throw new KeyNotFoundException($"Сотрудник с Id {id} не найден.");
+
+            return new EmployeeDTO
+            {
+                Id = employee.Id,
+                FullName = employee.FullName,
+                Email = employee.Email
+            };
+        }
 
         public async Task AddAsync(EmployeeDTO dto, CancellationToken cancellationToken = default)
         {

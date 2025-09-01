@@ -7,7 +7,7 @@ namespace Project_Manager.BusinessLogic.Services.Interfaces
     {
         Task AddAsync(EmployeeDTO dto, CancellationToken cancellationToken = default);
         Task<List<EmployeeDTO>> GetAllAsync(CancellationToken cancellationToken = default);
-
+        Task<EmployeeDTO> GetByIdAsync(int id, CancellationToken cancellationToken = default);
         Task UpdateAsync(int id, EmployeeDTO dto, CancellationToken cancellationToken = default);
 
         Task DeleteAsync(int id, CancellationToken cancellationToken = default);

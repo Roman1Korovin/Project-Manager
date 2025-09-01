@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Mvc;
 using Project_Manager.BusinessLogic.Services.Interfaces;
 using Project_Manager.DTOs;
 using Project_Manager.Models.Domain;
 
 namespace Project_Manager.Controllers.Razor
 {
-    public class ProjectRazorController(IProjectService projectService) : Controller
+    public class ProjectMvcController(IProjectService projectService) : Controller
     {
         // GET Project/Create
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
@@ -37,6 +39,7 @@ namespace Project_Manager.Controllers.Razor
             }
         }
         // GET Project/Index
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var projects = await projectService.GetAllAsync();
@@ -45,17 +48,24 @@ namespace Project_Manager.Controllers.Razor
 
 
         // GET Project/Edit/{id}
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             try
             {
-                var project = await projectService.GetAllAsync();
+                var project = await projectService.GetByIdAsync(id);
                 return View(project);
             }
-            catch(KeyNotFoundException ex) 
+            catch(KeyNotFoundException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
-                return View();
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return RedirectToAction("Index");
             }
 
         }
@@ -92,6 +102,7 @@ namespace Project_Manager.Controllers.Razor
             }
         }
         //Get Project/Delete/{id}
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             try

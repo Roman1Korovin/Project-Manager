@@ -2,12 +2,12 @@
 using Project_Manager.BusinessLogic.Services.Interfaces;
 using Project_Manager.DTOs;
 
-namespace Project_Manager.Controllers
+namespace Project_Manager.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]
 
-    public class EmployeeOnProjectController(IEmployeeOnProjectService employeeOnProjectService) : ControllerBase
+    public class EmployeeOnProjectApiController(IEmployeeOnProjectService employeeOnProjectService) : ControllerBase
     {
         // POST api/employeeonproject
         [HttpPost]
@@ -42,6 +42,11 @@ namespace Project_Manager.Controllers
             {
                 return NotFound(ex.Message); //Return 404 Not Found if Employee with specified Id doesnt found
             }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET api/employeeonproject/project/{projectId}
@@ -56,6 +61,11 @@ namespace Project_Manager.Controllers
             catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message); //Return 404 Not Found if Employee with specified Id doesnt found
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
             }
         }
 
@@ -73,6 +83,11 @@ namespace Project_Manager.Controllers
             catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);    //Return 404 Not Found if Employee with specified Id doesnt found
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
             }
         }
     }

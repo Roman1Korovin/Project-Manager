@@ -8,8 +8,8 @@ namespace Project_Manager.Data_Access.Repositories
     {
         public async Task AddAsync(ExecutorCompany executorCompany, CancellationToken cancellationToken = default)
         {
-            await context.ExecutorCompanies.AddAsync(executorCompany);     //Add ExecutorCompany object to context 
-            await context.SaveChangesAsync();    //Save changes to BD
+            await context.ExecutorCompanies.AddAsync(executorCompany, cancellationToken);     //Add ExecutorCompany object to context 
+            await context.SaveChangesAsync(cancellationToken);    //Save changes to BD
         }
 
         public async Task<ExecutorCompany?> GetByIdAsync(int id, CancellationToken cancellationToken = default)

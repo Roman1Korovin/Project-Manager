@@ -85,6 +85,28 @@ namespace Project_Manager.BusinessLogic.Services
             }).ToList();
         }
 
+
+
+        public async Task<ProjectDTO> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            // Check that project with current Id is exists
+            var project = await projectRepository.GetByIdAsync(id, cancellationToken);
+            if (project == null)
+                throw new KeyNotFoundException($"Проект с Id {id} не найден.");
+
+            return new ProjectDTO
+            {
+                Id = project.Id,
+                Name = project.Name,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                Priority = project.Priority,
+                CustomerCompanyID = project.CustomerCompanyID,
+                ExecutorCompanyID = project.ExecutorCompanyID,
+                ManagerID = project.ManagerID
+            };
+        }
+
         public async Task UpdateAsync(int id, ProjectDTO dto, CancellationToken cancellationToken = default)
         {
             ValidateProjectData(dto);
@@ -130,5 +152,6 @@ namespace Project_Manager.BusinessLogic.Services
 
             await projectRepository.DeleteAsync(project, cancellationToken);
         }
+
     }
 }

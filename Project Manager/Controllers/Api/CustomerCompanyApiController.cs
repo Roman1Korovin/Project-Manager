@@ -2,21 +2,21 @@
 using Project_Manager.BusinessLogic.Services.Interfaces;
 using Project_Manager.DTOs;
 
-namespace Project_Manager.Controllers
+namespace Project_Manager.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]
 
-    public class ExecutorCompanyController(IExecutorCompanyService executorCompanyService) : ControllerBase
+    public class CustomerCompanyAPIController(ICustomerCompanyService customerCompanyService) : ControllerBase
     {
-        // POST api/executorCompany
+        // POST api/customerCompany
         [HttpPost]
-        public async Task<IActionResult> AddAsync([FromBody] ExecutorCompanyDTO dto)
+        public async Task<IActionResult> AddAsync([FromBody] CustomerCompanyDTO dto)
         {
             try
             {
                 // Call business logic to add new employee
-                await executorCompanyService.AddAsync(dto);
+                await customerCompanyService.AddAsync(dto);
                 return Ok();    // Return 200 OK if successful
             }
             catch (Exception ex)

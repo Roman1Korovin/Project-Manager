@@ -70,7 +70,7 @@ namespace TestProject
         }
 
         [Fact]
-        public async Task AddAsync_ShouldThrow_WhenManagerNotFound()
+        public async Task AddAsync_ThrowsKeyNotFoundException_WhenManagerNotFound()
         {
             // Arrange
             var service = CreateService();
@@ -84,7 +84,7 @@ namespace TestProject
         }
 
         [Fact]
-        public async Task AddAsync_ShouldThrow_WhenCustomerNotFound()
+        public async Task AddAsync_ThrowsKeyNotFoundException_WhenCustomerNotFound()
         {
             // Arrange
             var service = CreateService();
@@ -101,7 +101,7 @@ namespace TestProject
         }
 
         [Fact]
-        public async Task AddAsync_ShouldThrow_WhenExecutorNotFound()
+        public async Task AddAsync_ThrowsKeyNotFoundException_WhenExecutorNotFound()
         {
             // Arrange
             var service = CreateService();
@@ -121,7 +121,7 @@ namespace TestProject
         }
 
         [Fact]
-        public async Task AddAsync_ShouldThrow_WhenStartDateAfterEndDate()
+        public async Task AddAsync_ThrowInvalidOperationException_WhenStartDateAfterEndDate()
         {
             // Arrange
             var service = CreateService();
@@ -137,7 +137,7 @@ namespace TestProject
         [InlineData(0)]
         [InlineData(-1)]
         [InlineData(6)]
-        public async Task AddAsync_Should_Throw_When_Priority_Is_Invalid(int invalidPriority)
+        public async Task AddAsync_ThrowArgumentException_WhenPriorityIsInvalid(int invalidPriority)
         {
             // Arrange
             var service = CreateService();
@@ -149,7 +149,7 @@ namespace TestProject
         }
 
         [Fact]
-        public async Task GetAllAsync_Should_Return_All_Projects_As_DTOs()
+        public async Task GetAllAsync_ReturnsProjectDTO_WhenAlways()
         {
             // Arrange
             var projects = new List<Project>
@@ -324,6 +324,4 @@ namespace TestProject
             await Assert.ThrowsAsync<KeyNotFoundException>(action);
         }
     }
-
-
 }

@@ -10,7 +10,7 @@ using Project_Manager.Models.Domain;
 using Project_Manager.DTOs;
 
 
-namespace TestsProject
+namespace TestProject
 {
     public class EmployeeServiceTests
     {
@@ -76,7 +76,7 @@ namespace TestsProject
         }
 
         [Fact]
-        public async Task AddAsync_ThrowsArgumentException_WhenFullNameIsMore500Symbols()
+        public async Task AddAsync_ThrowsArgumentException_WhenFullNameIsTooLong()
         {
             //arrange 
             var dto = new EmployeeDTO 
@@ -121,7 +121,7 @@ namespace TestsProject
         }
 
         [Fact]
-        public async Task AddAsync_ThrowsArgumentException_WhenEmailIsMore500Symbols()
+        public async Task AddAsync_ThrowsArgumentException_WhenEmailIsToLong()
         {
             //arrange 
             var dto = new EmployeeDTO { 
@@ -150,7 +150,7 @@ namespace TestsProject
         }
 
         [Fact]
-        public async Task GetAllAsync_ReturnsListOfEmployeeDTO_WhenEmployeesExist()
+        public async Task GetAllAsync_ReturnsListOfEmployeeDTO_WhenAlways()
         {
             //arrange 
             var employees = new List<Employee>

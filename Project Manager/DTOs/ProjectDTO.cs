@@ -8,7 +8,10 @@
         public DateTime EndDate { get; set; }
         public int Priority { get; set; }
         public int CustomerCompanyID { get; set; }
+        public string CustomerName { get; set; } = null!;
         public int ExecutorCompanyID { get; set; }
+        public string ExecutorName { get; set; } = null!;
         public int ManagerID { get; set; }
+        public string ManagerName { get; set; } = null!;
     }
 }

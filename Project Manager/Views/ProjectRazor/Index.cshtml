@@ -36,9 +36,9 @@
                     <td>@project.StartDate.ToShortDateString()</td>
                     <td>@project.EndDate.ToShortDateString()</td>
                     <td>@project.Priority</td>
-                    <td>@project.CustomerCompanyID</td>
-                    <td>@project.ExecutorCompanyID</td>
-                    <td>@project.ManagerID</td>
+                    <td>@project.CustomerName</td>
+                    <td>@project.ExecutorName</td>
+                    <td>@project.ManagerName</td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@project.Id" class="btn btn-sm btn-warning">Редактировать</a>
                         <a asp-action="Delete" asp-route-id="@project.Id" class="btn btn-sm btn-danger">Удалить</a>

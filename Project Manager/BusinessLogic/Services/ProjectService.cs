@@ -80,8 +80,11 @@ namespace Project_Manager.BusinessLogic.Services
                 EndDate = p.EndDate,
                 Priority = p.Priority,
                 CustomerCompanyID = p.CustomerCompanyID,
+                CustomerName = p.CustomerCompany.Name,
                 ExecutorCompanyID = p.ExecutorCompanyID,
-                ManagerID = p.ManagerID
+                ExecutorName = p.ExecutorCompany.Name,
+                ManagerID = p.ManagerID,
+                ManagerName = p.Manager.FullName
             }).ToList();
         }
 

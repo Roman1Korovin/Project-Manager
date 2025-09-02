@@ -1,4 +1,5 @@
 ﻿using Project_Manager.BusinessLogic.Services.Interfaces;
+using Project_Manager.Data_Access.Repositories;
 using Project_Manager.Data_Access.Repositories.Interfaces;
 using Project_Manager.DTOs;
 using Project_Manager.Models.Domain;
@@ -29,6 +30,13 @@ namespace Project_Manager.BusinessLogic.Services
             };
             //Call repository method to add new CustomerCompany
             await customerCompanyRepository.AddAsync(customerCompany, cancellationToken);
+        }
+
+        //Returns list of DTO contining only necessary field
+        public async Task<List<CustomerCompanyDTO>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            var customerCompanies = await customerCompanyRepository.GetAllAsync(cancellationToken);
+            return customerCompanies.Select(c => new CustomerCompanyDTO { Id = c.Id, Name = c.Name }).ToList();
         }
     }
 }

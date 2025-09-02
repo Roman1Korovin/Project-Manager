@@ -12,9 +12,16 @@ namespace Project_Manager.Data_Access.Repositories
             await context.SaveChangesAsync(cancellationToken);    //Save changes to BD
         }
 
+        public async Task<List<CustomerCompany>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            return await context.CustomerCompanies.ToListAsync(cancellationToken);
+        }
+
         public async Task<CustomerCompany?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             return await context.CustomerCompanies.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
         }
+
+
     }
 }

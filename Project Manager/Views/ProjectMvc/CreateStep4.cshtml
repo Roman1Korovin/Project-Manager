@@ -1,0 +1,97 @@
+﻿@using Project_Manager.DTOs
+@model ProjectWizardDTO
+
+@{
+    ViewData["Title"] = "Создание проекта - Шаг 4";
+}
+
+<h2>Создание проекта - Шаг 4/5</h2>
+
+<form asp-action="CreateStep4" method="post">
+    @Html.AntiForgeryToken()
+
+    @* Hidden fields for previous steps *@
+    <input type="hidden" asp-for="Name" />
+    <input type="hidden" asp-for="StartDate" />
+    <input type="hidden" asp-for="EndDate" />
+    <input type="hidden" asp-for="Priority" />
+    <input type="hidden" asp-for="CustomerCompanyID" />
+    <input type="hidden" asp-for="ExecutorCompanyID" />
+    <input type="hidden" asp-for="ManagerID" />
+
+    <div class="mb-3">
+        <label class="form-label">Выберите сотрудников проекта</label>
+        <select id="employeeSelect" class="form-select">
+            <option value="">-- Выберите сотрудника --</option>
+            @foreach (var employee in (List<EmployeeDTO>)ViewBag.Employees)
+            {
+                <option value="@employee.Id">@employee.FullName</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Выбранные сотрудники:</label>
+        <ul id="selectedEmployees">
+            @foreach (var id in Model.EmployeeIDs)
+            {
+                var emp = ((List<EmployeeDTO>)ViewBag.Employees).FirstOrDefault(e => e.Id == id);
+                if (emp != null)
+                {
+                    <li data-id="@emp.Id">@emp.FullName <button type="button" class="btn btn-sm btn-danger remove-btn">x</button></li>
+                    <input type="hidden" name="selectedEmployeeIds" value="@emp.Id" />
+                }
+            }
+        </ul>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Далее</button>
+    <a asp-action="CreateStep3" class="btn btn-secondary">Назад</a>
+</form>
+
+@section Scripts {
+    <script>
+        const employeeSelect = document.getElementById("employeeSelect");
+        const selectedEmployees = document.getElementById("selectedEmployees");
+
+        employeeSelect.addEventListener("change", function () {
+            const selectedId = this.value;
+            const selectedText = this.options[this.selectedIndex].text;
+
+            if (!selectedId) return;
+
+            if ([...selectedEmployees.querySelectorAll("li")].some(li => li.dataset.id === selectedId)) {
+                return;
+            }
+
+            const li = document.createElement("li");
+            li.dataset.id = selectedId;
+            li.textContent = selectedText + " ";
+
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "btn btn-sm btn-danger remove-btn";
+            btn.textContent = "x";
+            btn.addEventListener("click", () => {
+                li.remove();
+            });
+
+            li.appendChild(btn);
+            selectedEmployees.appendChild(li);
+
+            const hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.name = "selectedEmployeeIds";
+            hiddenInput.value = selectedId;
+            li.appendChild(hiddenInput);
+
+            this.value = "";
+        });
+
+        document.querySelectorAll(".remove-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                btn.parentElement.remove();
+            });
+        });
+    </script>
+}

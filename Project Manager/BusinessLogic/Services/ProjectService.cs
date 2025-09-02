@@ -65,6 +65,8 @@ namespace Project_Manager.BusinessLogic.Services
             };
             //Call repository method to add new Project
             await projectRepository.AddAsync(project, cancellationToken);
+
+            dto.Id = project.Id; // Assign generated Id back to DTO
         }
 
         //Returns list of DTO contining only necessary field

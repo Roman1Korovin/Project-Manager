@@ -1,0 +1,36 @@
+﻿@using Project_Manager.DTOs
+@model ProjectWizardDTO
+
+@{
+    ViewData["Title"] = "Создание проекта - Шаг 2";
+}
+
+<h2>Создание проекта - Шаг 2/5</h2>
+
+<form asp-action="CreateStep2" method="post">
+    @* Anti-forgery token *@
+    @Html.AntiForgeryToken()
+
+    @* Hidden fields for data from previous step *@
+    <input type="hidden" asp-for="Name" />
+    <input type="hidden" asp-for="StartDate" />
+    <input type="hidden" asp-for="EndDate" />
+    <input type="hidden" asp-for="Priority" />
+
+    <div class="mb-3">
+        <label asp-for="CustomerCompanyID" class="form-label">Компания-заказчик</label>
+        <select asp-for="CustomerCompanyID" class="form-select" asp-items="ViewBag.CustomerCompanies" required>
+            <option value="">-- Выберите компанию --</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ExecutorCompanyID" class="form-label">Компания-исполнитель</label>
+        <select asp-for="ExecutorCompanyID" class="form-select" asp-items="ViewBag.ExecutorCompanies" required>
+            <option value="">-- Выберите компанию --</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Далее</button>
+    <a asp-action="CreateStep1" class="btn btn-secondary">Назад</a>
+</form>

@@ -1,0 +1,37 @@
+﻿@using Project_Manager.DTOs
+@model ProjectWizardDTO
+
+@{
+    ViewData["Title"] = "Создание проекта - Шаг 5";
+}
+
+<h2>Создание проекта - Шаг 5</h2>
+
+<form id="step5Form" asp-action="CreateStep5" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    @* Hidden fields for data from previous steps *@
+    <input type="hidden" asp-for="Name" />
+    <input type="hidden" asp-for="StartDate" />
+    <input type="hidden" asp-for="EndDate" />
+    <input type="hidden" asp-for="Priority" />
+    <input type="hidden" asp-for="CustomerCompanyID" />
+    <input type="hidden" asp-for="ExecutorCompanyID" />
+    <input type="hidden" asp-for="ManagerID" />
+
+    @* Hidden fields for selected employees *@
+    @foreach (var employeeId in Model.EmployeeIDs)
+    {
+        <input type="hidden" name="EmployeeIDs" value="@employeeId" />
+    }
+
+
+    <div id="fileList" class="mb-3">
+        <strong>Выбранные файлы:</strong>
+        <ul></ul>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Создать проект</button>
+    <a asp-action="CreateStep4" class="btn btn-secondary">Назад</a>
+</form>
+

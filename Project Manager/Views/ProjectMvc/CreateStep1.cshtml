@@ -1,0 +1,54 @@
+﻿@using Project_Manager.DTOs
+@model ProjectWizardDTO
+
+@{
+    ViewData["Title"] = "Создание проекта - Шаг 1";
+}
+
+<h2>Создание проекта — Шаг 1/5</h2>
+
+<form id="step1Form" asp-action="CreateStep1" method="post">
+    @* Anti-forgery token *@
+    @Html.AntiForgeryToken()
+
+    
+
+    <div class="form-group">
+        <label>Название</label>
+        <input asp-for="Name" class="form-control" maxlength="500" required/>
+    </div>
+    <div class="form-group">
+        <label>Дата начала</label>
+        <input asp-for="StartDate" type="date" class="form-control" required/>
+    </div>
+    <div class="form-group">
+        <label>Дата окончания</label>
+        <input asp-for="EndDate" type="date" class="form-control"  required/>
+    </div>
+    <div id="formError" class="text-danger mb-2"></div> 
+    <div class="form-group">
+        <label>Приоритет</label>
+        <input asp-for="Priority" type="number" class="form-control" min="1" max="5" required/>
+        <small class="form-text text-black text-muted"> Допустимый диапозон 1-5</small>
+    </div>
+    <button type="submit" class="btn btn-primary">Далее</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById("step1Form").addEventListener("submit", function(e) {
+            const start = new Date(document.getElementById("StartDate").value);
+            const end = new Date(document.getElementById("EndDate").value);
+
+                 const errorDiv = document.getElementById("formError");
+
+        if (end < start) {
+            e.preventDefault(); 
+            errorDiv.textContent = "Дата окончания не может быть раньше даты начала!";
+        } else {
+            errorDiv.textContent = ""; 
+        }
+        });
+    </script>
+}
+

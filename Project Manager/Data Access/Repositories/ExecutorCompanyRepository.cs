@@ -12,6 +12,11 @@ namespace Project_Manager.Data_Access.Repositories
             await context.SaveChangesAsync(cancellationToken);    //Save changes to BD
         }
 
+        public async Task<List<ExecutorCompany>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            return await context.ExecutorCompanies.ToListAsync(cancellationToken);
+        }
+
         public async Task<ExecutorCompany?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             return await context.ExecutorCompanies.FirstOrDefaultAsync(e => e.Id == id, cancellationToken);

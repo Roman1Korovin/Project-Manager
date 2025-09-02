@@ -42,7 +42,14 @@
                     <td>@project.ManagerName</td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@project.Id" class="btn btn-sm btn-warning">Редактировать</a>
-                        <a asp-action="Delete" asp-route-id="@project.Id" class="btn btn-sm btn-danger">Удалить</a>
+                        <form asp-action="Delete" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@project.Id" />
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Вы уверены, что хотите удалить сотрудника <<@project.Name>> ?');">
+                                Удалить
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 index++;

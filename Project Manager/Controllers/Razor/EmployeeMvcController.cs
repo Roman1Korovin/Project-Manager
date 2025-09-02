@@ -93,7 +93,7 @@ namespace Project_Manager.Controllers.Razor
                 return View(dto);
             }
         }
-        //Get Employee/Delete/{id}
+        //POST Employee/Delete/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
@@ -101,11 +101,10 @@ namespace Project_Manager.Controllers.Razor
             try
             {
                 await employeeService.DeleteAsync(id);
-                TempData["SuccessMessage"] = "Проект успешно удалён";
+                TempData["SuccessMessage"] = "Сотрудник успешно удалён";
             }
             catch (KeyNotFoundException ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
                 TempData["ErrorMessage"] = ex.Message;
             }
             catch (Exception ex)

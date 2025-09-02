@@ -101,8 +101,9 @@ namespace Project_Manager.Controllers.Razor
                 return View(dto);
             }
         }
-        //Get Project/Delete/{id}
-        [HttpGet]
+        //POST Project/Delete/{id}
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             try

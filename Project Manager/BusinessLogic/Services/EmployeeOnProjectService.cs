@@ -72,5 +72,16 @@ namespace Project_Manager.BusinessLogic.Services
                 ProjectId = e.ProjectId
             }).ToList();
         }
+
+        public async Task DeleteByProjectIdAsync(int projectId, CancellationToken cancellationToken = default)
+        {
+            // Check that project with current Id is exists
+            var project = await projectRepository.GetByIdAsync(projectId, cancellationToken);
+            if (project == null)
+                throw new KeyNotFoundException($"Проект с Id {projectId} не найден.");
+
+            // Delete employees from project
+            await employeeOnProjectRepository.DeleteByProjectIdAsync(projectId, cancellationToken);
+        }
     }
 }

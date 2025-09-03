@@ -7,6 +7,7 @@ using Project_Manager.BusinessLogic.Services.Interfaces;
 using Project_Manager.DTOs;
 using Project_Manager.Models.Domain;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 
 namespace Project_Manager.Controllers.Razor
 {
@@ -21,28 +22,42 @@ namespace Project_Manager.Controllers.Razor
     {   // GET Project/StartWizard
         public IActionResult StartWizard()
         {
-            TempData.Remove("ProjectWizard");
+            HttpContext.Session.Remove("ProjectWizard");
             return RedirectToAction("CreateStep1");
+        }
+
+        //Common method for getting DTO from Session
+        private ProjectWizardDTO GetWizardFromSession()
+        {
+            var json = HttpContext.Session.GetString("ProjectWizard");
+            return string.IsNullOrEmpty(json)
+                ? new ProjectWizardDTO()
+                : JsonConvert.DeserializeObject<ProjectWizardDTO>(json)!;
+        }
+
+        //Common method for saving DTO from Session
+        private void SaveWizardToSession(ProjectWizardDTO dto)
+        {
+            HttpContext.Session.SetString("ProjectWizard", JsonConvert.SerializeObject(dto));
         }
 
         // GET Project/CreateStep1
         [HttpGet]
         public IActionResult CreateStep1()
         {
-            // Render first step of project creation wizard
-            var dto = TempData.Peek("ProjectWizard") is string temp
-                ? JsonConvert.DeserializeObject<ProjectWizardDTO>(temp) ?? new ProjectWizardDTO()
-                : new ProjectWizardDTO();
-
-            return View(dto);
+            var dto = GetWizardFromSession();
+            return View(dto.Step1);
         }
+
         // POST Project/CreatStep1
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateStep1(ProjectWizardDTO dto)
+        public IActionResult CreateStep1(Step1DTO step1)
         {
-            // Save partially filled DTO to temporary storage for next step
-            TempData["ProjectWizard"] = JsonConvert.SerializeObject(dto);
+
+            var wizard = GetWizardFromSession();
+            wizard.Step1 = step1; // update only step 1
+            SaveWizardToSession(wizard);
             // Redirect to the second step of the wizard
             return RedirectToAction("CreateStep2");
         }
@@ -52,10 +67,7 @@ namespace Project_Manager.Controllers.Razor
         public async Task<IActionResult> CreateStep2()
         {
 
-            //Extract existing ProjectDTO from TempData or create a new one
-            var dto = TempData.Peek("ProjectWizard") is string temp
-                ? JsonConvert.DeserializeObject<ProjectWizardDTO>(temp) ?? new ProjectWizardDTO()
-                : new ProjectWizardDTO();
+            var dto = GetWizardFromSession();
 
             // Download companies from services 
             var customerCompanies = await customerCompanyService.GetAllAsync(); 
@@ -64,16 +76,18 @@ namespace Project_Manager.Controllers.Razor
             //Passing to ViewBag for drop-down lists
             ViewBag.CustomerCompanies = new SelectList(customerCompanies, "Id", "Name");
             ViewBag.ExecutorCompanies = new SelectList(executorCompanies, "Id", "Name");
-            return View(dto);
+
+            return View(dto.Step2);
         }
 
         // POST Project/CreateStep2
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateStep2(ProjectWizardDTO dto)
+        public IActionResult CreateStep2(Step2DTO step2)
         {
-            // Save updated DTO to TempData for next step
-            TempData["ProjectWizard"] = JsonConvert.SerializeObject(dto);
+            var wizard = GetWizardFromSession();
+            wizard.Step2 = step2;
+            SaveWizardToSession(wizard);
 
             // Redirect to step 3
             return RedirectToAction("CreateStep3");
@@ -84,23 +98,20 @@ namespace Project_Manager.Controllers.Razor
         public async Task<IActionResult> CreateStep3()
         {
 
-            var dto = TempData.Peek("ProjectWizard") is string temp
-                ? JsonConvert.DeserializeObject<ProjectWizardDTO>(temp) ?? new ProjectWizardDTO()
-                : new ProjectWizardDTO();
-
+            var dto = GetWizardFromSession();
             var employees = await employeeService.GetAllAsync();
             ViewBag.Employees = new SelectList(employees, "Id", "FullName");
-
-            return View(dto);
+            return View(dto.Step3);
         }
 
         // POST Project/CreateStep3
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateStep3(ProjectWizardDTO dto)
+        public IActionResult CreateStep3(Step3DTO step3)
         {
-            TempData["ProjectWizard"] = JsonConvert.SerializeObject(dto);
-
+            var wizard = GetWizardFromSession();
+            wizard.Step3 = step3;
+            SaveWizardToSession(wizard);
             return RedirectToAction("CreateStep4");
         }
 
@@ -108,25 +119,25 @@ namespace Project_Manager.Controllers.Razor
         [HttpGet]
         public async Task<IActionResult> CreateStep4()
         {
-            var dto = TempData.Peek("ProjectWizard") is string temp
-                ? JsonConvert.DeserializeObject<ProjectWizardDTO>(temp) ?? new ProjectWizardDTO()
-                : new ProjectWizardDTO();
+            var dto = GetWizardFromSession();
 
             var employees = await employeeService.GetAllAsync();
             ViewBag.Employees = employees;
 
-            return View(dto);
+            return View(dto.Step4);
         }
 
         // POST Project/CreateStep4
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateStep4(ProjectWizardDTO dto, int[]? selectedEmployeeIds)
+        public IActionResult CreateStep4(Step4DTO step4, int[]? selectedEmployeeIds)
         {
+            var wizard = GetWizardFromSession();
+            wizard.Step4 = step4;
             if (selectedEmployeeIds != null)
-                dto.EmployeeIDs = selectedEmployeeIds.ToList();
+                step4.EmployeeIDs = selectedEmployeeIds.ToList();
 
-            TempData["ProjectWizard"] = JsonConvert.SerializeObject(dto);
+            SaveWizardToSession(wizard);
 
             return RedirectToAction("CreateStep5");
         }
@@ -135,33 +146,55 @@ namespace Project_Manager.Controllers.Razor
         [HttpGet]
         public IActionResult CreateStep5()
         {
-            var dto = TempData.Peek("ProjectWizard") is string temp
-                ? JsonConvert.DeserializeObject<ProjectWizardDTO>(temp) ?? new ProjectWizardDTO()
-                : new ProjectWizardDTO();
+            var dto = GetWizardFromSession();
 
-            return View(dto);
+            return View(dto.Step5);
         }
 
         // POST Project/CreateStep5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateStep5(ProjectWizardDTO dto)
+        public async Task<IActionResult> CreateStep5(Step5DTO step5)
+        {
+            var wizard = GetWizardFromSession();
+            wizard.Step5 = step5;
+
+            int? projectId = HttpContext.Session.GetInt32("ProjectId");
+
+            if (projectId.HasValue)
+            {
+                await UpdateProjectAsync(projectId.Value, wizard);
+            }
+            else
+            {
+                await CreateProjectAsync(wizard);
+            }
+
+            // clear Session after save
+            HttpContext.Session.Remove("ProjectWizard");
+            HttpContext.Session.Remove("ProjectId");
+
+            return RedirectToAction("Index"); 
+
+        }
+
+        private async Task CreateProjectAsync(ProjectWizardDTO dto)
         {
             //CreateProject
             var project = new ProjectDTO
             {
-                Name = dto.Name,
-                StartDate = dto.StartDate!.Value, 
-                EndDate = dto.EndDate!.Value,
-                Priority = dto.Priority,
-                CustomerCompanyID = dto.CustomerCompanyID!.Value,
-                ExecutorCompanyID = dto.ExecutorCompanyID!.Value,
-                ManagerID = dto.ManagerID!.Value
+                Name = dto.Step1.Name,
+                StartDate = dto.Step1.StartDate!.Value,
+                EndDate = dto.Step1.EndDate!.Value,
+                Priority = dto.Step1.Priority,
+                CustomerCompanyID = dto.Step2.CustomerCompanyID!.Value,
+                ExecutorCompanyID = dto.Step2.ExecutorCompanyID!.Value,
+                ManagerID = dto.Step3.ManagerID!.Value
             };
             await projectService.AddAsync(project);
 
             //Create Employees On Project
-            foreach (var empId in dto.EmployeeIDs)
+            foreach (var empId in dto.Step4.EmployeeIDs)
             {
                 var empOnProject = new EmployeeOnProjectDTO
                 {
@@ -170,13 +203,37 @@ namespace Project_Manager.Controllers.Razor
                 };
                 await employeeOnProjectService.AddAsync(empOnProject);
             }
-
-            TempData.Remove("ProjectWizard"); // clear TempData after save
-
-            return RedirectToAction("Index"); 
-
         }
 
+        private async Task UpdateProjectAsync(int projectId, ProjectWizardDTO dto)
+        {
+            // Update project
+            var project = new ProjectDTO
+            {
+                Id = projectId,
+                Name = dto.Step1.Name,
+                StartDate = dto.Step1.StartDate!.Value,
+                EndDate = dto.Step1.EndDate!.Value,
+                Priority = dto.Step1.Priority,
+                CustomerCompanyID = dto.Step2.CustomerCompanyID!.Value,
+                ExecutorCompanyID = dto.Step2.ExecutorCompanyID!.Value,
+                ManagerID = dto.Step3.ManagerID!.Value
+            };
+
+            await projectService.UpdateAsync(projectId, project);
+
+            // Update employees
+            await employeeOnProjectService.DeleteByProjectIdAsync(projectId); //Delete old Employees
+            foreach (var empId in dto.Step4.EmployeeIDs)
+            {
+                var empOnProject = new EmployeeOnProjectDTO
+                {
+                    ProjectId = project.Id,
+                    EmployeeId = empId
+                };
+                await employeeOnProjectService.AddAsync(empOnProject);
+            }
+        }
 
         // GET Project/Index
         [HttpGet]
@@ -194,26 +251,36 @@ namespace Project_Manager.Controllers.Razor
             try
             {
                 var project = await projectService.GetByIdAsync(id);
+                var employees = await employeeOnProjectService.GetByProjectIdAsync(id);
 
                 var wizardDto = new ProjectWizardDTO
                 {
-                    Name = project.Name,
-                    StartDate = project.StartDate,
-                    EndDate = project.EndDate,
-                    Priority = project.Priority,
-                    CustomerCompanyID = project.CustomerCompanyID,
-                    ExecutorCompanyID = project.ExecutorCompanyID,
-                    ManagerID = project.ManagerID,
-                    EmployeeIDs = (await employeeOnProjectService.GetByProjectIdAsync(id))
-                           .Select(e => e.EmployeeId).ToList()
-                    
+                    Step1 = new Step1DTO
+                    {
+                        Name = project.Name,
+                        StartDate = project.StartDate,
+                        EndDate = project.EndDate,
+                        Priority = project.Priority
+                    },
+                    Step2 = new Step2DTO
+                    {
+                        CustomerCompanyID = project.CustomerCompanyID,
+                        ExecutorCompanyID = project.ExecutorCompanyID
+                    },
+                    Step3 = new Step3DTO
+                    {
+                        ManagerID = project.ManagerID
+                    },
+                    Step4 = new Step4DTO
+                    {
+                        EmployeeIDs = employees.Select(e => e.EmployeeId).ToList()
+                    }
                 };
 
 
-                TempData["ProjectWizard"] = JsonConvert.SerializeObject(wizardDto);
+                HttpContext.Session.SetString("ProjectWizard", JsonConvert.SerializeObject(wizardDto));
 
-    
-                TempData["ProjectId"] = id;
+                HttpContext.Session.SetInt32("ProjectId", id);
 
                 return RedirectToAction("CreateStep1");
             }
@@ -231,37 +298,7 @@ namespace Project_Manager.Controllers.Razor
 
         }
 
-        // POST Project/Edit/{id}
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ProjectDTO dto)
-        {
-            try
-            {
-                await projectService.UpdateAsync(id, dto);
-                return RedirectToAction("Index");
-            }
-            catch (KeyNotFoundException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(dto);
-            }
-            catch (ArgumentException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(dto);
-            }
-            catch (InvalidOperationException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(dto);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, "Произошла ошибка: " + ex.Message);
-                return View(dto);
-            }
-        }
+
         //POST Project/Delete/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]

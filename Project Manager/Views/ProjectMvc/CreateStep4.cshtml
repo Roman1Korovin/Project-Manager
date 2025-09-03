@@ -1,5 +1,5 @@
 ﻿@using Project_Manager.DTOs
-@model ProjectWizardDTO
+@model Step4DTO
 
 @{
     ViewData["Title"] = "Создание проекта - Шаг 4";
@@ -9,15 +9,6 @@
 
 <form asp-action="CreateStep4" method="post">
     @Html.AntiForgeryToken()
-
-    @* Hidden fields for previous steps *@
-    <input type="hidden" asp-for="Name" />
-    <input type="hidden" asp-for="StartDate" />
-    <input type="hidden" asp-for="EndDate" />
-    <input type="hidden" asp-for="Priority" />
-    <input type="hidden" asp-for="CustomerCompanyID" />
-    <input type="hidden" asp-for="ExecutorCompanyID" />
-    <input type="hidden" asp-for="ManagerID" />
 
     <div class="mb-3">
         <label class="form-label">Выберите сотрудников проекта</label>
@@ -38,8 +29,11 @@
                 var emp = ((List<EmployeeDTO>)ViewBag.Employees).FirstOrDefault(e => e.Id == id);
                 if (emp != null)
                 {
-                    <li data-id="@emp.Id">@emp.FullName <button type="button" class="btn btn-sm btn-danger remove-btn">x</button></li>
-                    <input type="hidden" name="selectedEmployeeIds" value="@emp.Id" />
+                    <li data-id="@emp.Id">
+                        @emp.FullName
+                        <button type="button" class="btn btn-sm btn-danger remove-btn">x</button>
+                        <input type="hidden" name="selectedEmployeeIds" value="@emp.Id" />
+                    </li>
                 }
             }
         </ul>
@@ -54,15 +48,21 @@
         const employeeSelect = document.getElementById("employeeSelect");
         const selectedEmployees = document.getElementById("selectedEmployees");
 
+        function addRemoveListener(btn) {
+            btn.addEventListener("click", () => {
+                const li = btn.parentElement;
+                li.remove();
+            });
+        }
+
+        document.querySelectorAll(".remove-btn").forEach(addRemoveListener);
+
         employeeSelect.addEventListener("change", function () {
             const selectedId = this.value;
             const selectedText = this.options[this.selectedIndex].text;
-
             if (!selectedId) return;
 
-            if ([...selectedEmployees.querySelectorAll("li")].some(li => li.dataset.id === selectedId)) {
-                return;
-            }
+            if ([...selectedEmployees.querySelectorAll("li")].some(li => li.dataset.id === selectedId)) return;
 
             const li = document.createElement("li");
             li.dataset.id = selectedId;
@@ -72,12 +72,9 @@
             btn.type = "button";
             btn.className = "btn btn-sm btn-danger remove-btn";
             btn.textContent = "x";
-            btn.addEventListener("click", () => {
-                li.remove();
-            });
+            addRemoveListener(btn);
 
             li.appendChild(btn);
-            selectedEmployees.appendChild(li);
 
             const hiddenInput = document.createElement("input");
             hiddenInput.type = "hidden";
@@ -85,13 +82,9 @@
             hiddenInput.value = selectedId;
             li.appendChild(hiddenInput);
 
-            this.value = "";
-        });
+            selectedEmployees.appendChild(li);
 
-        document.querySelectorAll(".remove-btn").forEach(btn => {
-            btn.addEventListener("click", function () {
-                btn.parentElement.remove();
-            });
+            this.value = "";
         });
     </script>
 }

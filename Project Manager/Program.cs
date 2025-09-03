@@ -17,7 +17,14 @@ builder.Services.AddBusinessLogic();
 
 builder.Services.AddSwaggerGen();
 
-
+// Add session services
+builder.Services.AddDistributedMemoryCache(); // или другой провайдер кэша
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session lifetime
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
@@ -29,12 +36,17 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthorization();
+
+// Add middleware for session
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

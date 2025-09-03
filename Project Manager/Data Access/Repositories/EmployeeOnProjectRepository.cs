@@ -34,6 +34,15 @@ namespace Project_Manager.Data_Access.Repositories
                 .ToListAsync(cancellationToken);
         }
 
+        public async Task DeleteByProjectIdAsync(int projectId, CancellationToken cancellationToken = default)
+        {
+            await context.EmployeeOnProjects
+                .Where(ep => ep.ProjectId == projectId)
+                .ExecuteDeleteAsync(cancellationToken);
+
+            context.ChangeTracker.Clear();
+        }
+
         public async Task<EmployeeOnProject?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             return await context.EmployeeOnProjects
@@ -41,5 +50,7 @@ namespace Project_Manager.Data_Access.Repositories
                  .Include(ep => ep.Employee)
                  .FirstOrDefaultAsync(ep => ep.Id == id, cancellationToken);
         }
+
+        
     }
 }

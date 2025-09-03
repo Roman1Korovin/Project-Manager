@@ -1,5 +1,5 @@
 ﻿@using Project_Manager.DTOs
-@model ProjectWizardDTO
+@model Step3DTO
 
 @{
     ViewData["Title"] = "Создание проекта - Шаг 3";
@@ -9,14 +9,6 @@
 
 <form asp-action="CreateStep3" method="post">
     @Html.AntiForgeryToken()
-
-    @* Hidden fields for data from previous steps *@
-    <input type="hidden" asp-for="Name" />
-    <input type="hidden" asp-for="StartDate" />
-    <input type="hidden" asp-for="EndDate" />
-    <input type="hidden" asp-for="Priority" />
-    <input type="hidden" asp-for="CustomerCompanyID" />
-    <input type="hidden" asp-for="ExecutorCompanyID" />
 
     <div class="mb-3">
         <label asp-for="ManagerID" class="form-label">Руководитель проекта</label>

@@ -14,8 +14,5 @@
         public int ManagerID { get; set; }
         public string ManagerName { get; set; } = null!;
 
-        public List<int> EmployeeIDs { get; set; } = new List<int>();
-
-        public List<IFormFile> Files { get; set; } = new List<IFormFile>();
     }
 }

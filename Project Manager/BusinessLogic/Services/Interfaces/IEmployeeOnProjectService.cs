@@ -14,5 +14,7 @@ namespace Project_Manager.BusinessLogic.Services.Interfaces
 
         Task<List<EmployeeOnProjectDTO>> GetByEmployeeIdAsync(int employeeId, CancellationToken cancellationToken = default);
 
+        Task DeleteByProjectIdAsync(int projectId, CancellationToken cancellationToken = default);
+
     }
 }

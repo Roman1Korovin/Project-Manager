@@ -22,6 +22,7 @@
             <th>Заказчик</th>
             <th>Исполнитель</th>
             <th>Менеджер</th>
+            <th>Сотрудники</th>
             <th>Действия</th>
         </tr>
     </thead>
@@ -40,6 +41,11 @@
                     <td>@project.CustomerName</td>
                     <td>@project.ExecutorName</td>
                     <td>@project.ManagerName</td>
+                    <td class="text-center">
+                        <a asp-action="EmployeesByProject" asp-route-projectId="@project.Id" title="Сотрудники проекта">
+                            <i class="bi bi-people-fill"></i> 
+                        </a>
+                    </td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@project.Id" class="btn btn-sm btn-warning">Редактировать</a>
                         <form asp-action="Delete" method="post" style="display:inline;">

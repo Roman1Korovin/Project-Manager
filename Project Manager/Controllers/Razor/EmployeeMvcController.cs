@@ -102,6 +102,10 @@ namespace Project_Manager.Controllers.Razor
                 await employeeService.DeleteAsync(id);
                 TempData["SuccessMessage"] = "Сотрудник успешно удалён";
             }
+            catch (InvalidOperationException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
             catch (KeyNotFoundException ex)
             {
                 TempData["ErrorMessage"] = ex.Message;

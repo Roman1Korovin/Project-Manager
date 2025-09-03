@@ -30,6 +30,19 @@ namespace Project_Manager.Data_Access.Repositories
 
         public async Task DeleteAsync(Employee employee, CancellationToken cancellationToken = default)
         {
+            // Check that employee is manager of at least one project
+            var projectsWhereManager = await context.Projects
+                .Where(p => p.ManagerID == employee.Id)
+                .ToListAsync(cancellationToken);
+
+            if (projectsWhereManager.Any())
+            {
+                var projectNames = string.Join(", ", projectsWhereManager.Select(p => p.Name));
+                throw new InvalidOperationException(
+                    $"Невозможно удалить сотрудника {employee.FullName}, так как он является менеджером проектов: {projectNames}."
+                );
+            }
+
             context.Employees.Remove(employee);
             await context.SaveChangesAsync(cancellationToken);
         }

@@ -240,6 +240,8 @@ namespace Project_Manager.Controllers.Razor
         public async Task<IActionResult> EmployeesOnProject(int projectId)
         {
             var employees = await employeeOnProjectService.GetByProjectIdAsync(projectId);
+            var project = await projectService.GetByIdAsync(projectId);
+            ViewData["ProjectName"] = project?.Name ?? "неизвестный проект";
             return View(employees); 
         }
 

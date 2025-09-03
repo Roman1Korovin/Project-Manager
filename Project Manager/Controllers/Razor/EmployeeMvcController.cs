@@ -9,8 +9,7 @@ namespace Project_Manager.Controllers.Razor
         // GET: Employee/Create
         [HttpGet]
         public IActionResult Create()
-        {
-            
+        {    
             return View();
         }
 
@@ -53,7 +52,7 @@ namespace Project_Manager.Controllers.Razor
             {
                 var employee = await employeeService.GetByIdAsync(id); 
 
-                return View(employee); 
+                return View("Create", employee); 
             }
             catch (KeyNotFoundException ex)
             {
@@ -80,17 +79,17 @@ namespace Project_Manager.Controllers.Razor
             catch (KeyNotFoundException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
-                return View(dto);
+                return View("Create", dto);
             }
             catch (ArgumentException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
-                return View(dto);
+                return View("Create", dto);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, "Произошла ошибка: " + ex.Message);
-                return View(dto);
+                return View("Create", dto);
             }
         }
         //POST Employee/Delete/{id}

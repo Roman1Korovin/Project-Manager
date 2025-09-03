@@ -1,0 +1,30 @@
+﻿@model Project_Manager.DTOs.EmployeeDTO
+
+@{
+    var isEdit = Model?.Id > 0;
+    ViewData["Title"] = isEdit ? "Редактировать сотрудника" : "Добавить сотрудника";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="@(isEdit ? "Edit" : "Create")" method="post">
+    @Html.AntiForgeryToken()
+
+     @if (isEdit)
+    {
+        <input type="hidden" asp-for="Id" />
+    }
+
+    <div class="mb-3">
+        <label>ФИО</label>
+        <input asp-for="FullName" class="form-control" maxlength="500" required/>
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <input asp-for="Email" class="form-control" type="email" maxlength="500" required/>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
+</form>

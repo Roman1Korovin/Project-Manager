@@ -7,6 +7,8 @@
 
 <h2>Создание проекта — Шаг 1/5</h2>
 
+
+
 <form id="step1Form" asp-action="CreateStep1" method="post">
     @* Anti-forgery token *@
     @Html.AntiForgeryToken()
@@ -31,6 +33,8 @@
         <small class="form-text text-black text-muted"> Допустимый диапозон 1-5</small>
     </div>
     <button type="submit" class="btn btn-primary">Далее</button>
+
+    <a asp-action="Index" class="btn btn-secondary">Назад к проектам</a>
 </form>
 
 @section Scripts {

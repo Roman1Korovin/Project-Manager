@@ -1,0 +1,52 @@
+﻿@using Project_Manager.DTOs
+@model List<EmployeeOnProjectDTO>
+
+@{
+    ViewData["Title"] = "Сотрудники проекта";
+}
+
+<h2>Сотрудники проекта</h2>
+
+<p>
+    @if (Model != null && Model.Any())
+    {
+        <a asp-action="EditEmployees" asp-route-projectId="@Model.First().ProjectId" class="btn btn-primary">
+            Изменить состав
+        </a>
+    }
+    <a asp-action="Index" class="btn btn-secondary">Назад к проектам</a>
+    
+</p>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>ФИО</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 1;
+            }
+            @foreach (var emp in Model)
+            {
+                <tr>
+                    <td>@index</td>
+                    <td>@emp.FullName</td>
+                    <td>@emp.Email</td>
+                </tr>
+                index++;
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">
+        В этом проекте пока нет сотрудников.
+    </div>
+}

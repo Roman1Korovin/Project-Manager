@@ -235,6 +235,65 @@ namespace Project_Manager.Controllers.Razor
             }
         }
 
+        // GET Project/EmployeesByProject/{int}
+        [HttpGet]
+        public async Task<IActionResult> EmployeesOnProject(int projectId)
+        {
+            var employees = await employeeOnProjectService.GetByProjectIdAsync(projectId);
+            return View(employees); 
+        }
+
+        // GET Project/EditEmployees/{projectId}
+        [HttpGet]
+        public async Task<IActionResult> EditEmployees(int projectId)
+        {
+            try
+            {
+                var project = await projectService.GetByIdAsync(projectId);
+
+                var wizardDto = new ProjectWizardDTO
+                {
+                    Step1 = new Step1DTO
+                    {
+                        Name = project.Name,
+                        StartDate = project.StartDate,
+                        EndDate = project.EndDate,
+                        Priority = project.Priority
+                    },
+                    Step2 = new Step2DTO
+                    {
+                        CustomerCompanyID = project.CustomerCompanyID,
+                        ExecutorCompanyID = project.ExecutorCompanyID
+                    },
+                    Step3 = new Step3DTO
+                    {
+                        ManagerID = project.ManagerID
+                    },
+                    Step4 = new Step4DTO
+                    {
+                        EmployeeIDs = (await employeeOnProjectService.GetByProjectIdAsync(projectId))
+                            .Select(e => e.EmployeeId)
+                            .ToList()
+                    }
+                };
+
+                HttpContext.Session.SetString("ProjectWizard", JsonConvert.SerializeObject(wizardDto));
+                HttpContext.Session.SetInt32("ProjectId", projectId);
+
+                return RedirectToAction("CreateStep4");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return RedirectToAction("Index");
+            }
+        }
+
         // GET Project/Index
         [HttpGet]
         public async Task<IActionResult> Index()

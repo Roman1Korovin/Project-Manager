@@ -69,7 +69,9 @@ namespace Project_Manager.BusinessLogic.Services
             return projects.Select(e => new EmployeeOnProjectDTO
             {
                 EmployeeId = e.EmployeeId,
-                ProjectId = e.ProjectId
+                ProjectId = e.ProjectId,
+                FullName = e.Employee.FullName,
+                Email = e.Employee.Email
             }).ToList();
         }
 

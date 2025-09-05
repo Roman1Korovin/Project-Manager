@@ -36,7 +36,10 @@ namespace Project_Manager.BusinessLogic.Services
         public async Task<List<EmployeeDTO>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             var employees = await employeeRepository.GetAllAsync(cancellationToken);
-            return employees.Select(e => new EmployeeDTO {Id = e.Id, FullName = e.FullName, Email = e.Email }).ToList();
+            return employees
+                .Select(e => new EmployeeDTO {Id = e.Id, FullName = e.FullName, Email = e.Email })
+                .OrderBy(e =>e.FullName)
+                .ToList();
         }
 
         public async Task<EmployeeDTO> GetByIdAsync(int id, CancellationToken cancellationToken = default)

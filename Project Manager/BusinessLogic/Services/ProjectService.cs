@@ -87,7 +87,9 @@ namespace Project_Manager.BusinessLogic.Services
                 ExecutorName = p.ExecutorCompany.Name,
                 ManagerID = p.ManagerID,
                 ManagerName = p.Manager.FullName
-            }).ToList();
+            })   
+                .OrderBy(p => p.Name)
+                .ToList();
         }
 
 

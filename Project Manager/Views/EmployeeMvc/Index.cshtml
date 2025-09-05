@@ -3,7 +3,10 @@
 
 @{
     ViewData["Title"] = "Список сотрудников";
+    ViewData["SortColumn"] = ViewData["SortColumn"] ?? "FullName";
+    ViewData["SortDirection"] = ViewData["SortDirection"] ?? "asc";
 }
+
 
 <h2>Список сотрудников</h2>
 
@@ -21,57 +24,46 @@
     </div>
 }
 
+
 <p>
     <a asp-action="Create" class="btn btn-primary">Добавить сотрудника</a>
 </p>
 
-<div style="max-height: 500px; overflow-y: auto;">
-<table class="table table-striped table-bordered">
-    <thead class="thead-dark">
-        <tr>
-            <th>#</th>
-            <th>ФИО</th>
-            <th>Email</th>
-            <th>Проекты</th>
-            <th>Действия</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model != null && Model.Any())
-        {
-            int index = 1;
-            foreach (var employee in Model)
-            {
-                <tr>
-                    <td>@index</td>
-                    <td>@employee.FullName</td>
-                    <td>@employee.Email</td>
-                    <td class="text-center">
-                        <a asp-action="IndexEmployeeProjects" asp-route-employeeId="@employee.Id" title="Проекты сотрудника">
-                            <i class="bi bi-folder-fill"></i>
-                        </a>
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@employee.Id" class="btn btn-sm btn-warning">Редактировать</a>
-                        <form asp-action="Delete" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@employee.Id" />
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-danger"
-                                    onclick="return confirm('Вы уверены, что хотите удалить сотрудника <<@employee.FullName>> ?');">
-                                Удалить
-                            </button>
-                        </form>
-                    </td>
-                </tr>
-                index++;
-            }
-        }
-        else
-        {
-            <tr>
-                <td colspan="4" class="text-center">Сотрудников пока нет</td>
-            </tr>
-        }
-    </tbody>
-</table>
-</div>
+<div id="employeesTableContainer"  style="max-height: 500px; overflow-y: auto;">
+    @await Html.PartialAsync("EmployeesTable", Model)
+ </div>
+
+
+
+<!-- AJAX script for sorting  -->
+@section Scripts {
+    <script>
+
+    let currentSortColumn = '@ViewData["SortColumn"]';
+    let currentSortDirection = '@ViewData["SortDirection"]';
+
+    //Tracks clicks on any element with class .sort-link
+    $(document).on('click', '.sort-link', function(e){
+        //Cancels page reload
+        e.preventDefault();
+        
+        // Get column from clicked link
+        let column = $(this).data('column');
+
+        //If clicked on same column, invert direction.
+        if(column === currentSortColumn){
+            currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+        } else { //Otherwise sort by new column, default direction is asc
+            currentSortColumn = column;
+            currentSortDirection = 'asc';
+        }        
+
+        //Sends GET request to EmployeesTablePartial
+        $.get('@Url.Action("EmployeesTablePartial")',
+               { sortColumn: currentSortColumn, sortDirection: currentSortDirection },       
+               function(data){
+				   $('#employeesTableContainer').html(data); //Changes employeesTableContainer content to new HTML
+        });
+    });
+</script>
+}

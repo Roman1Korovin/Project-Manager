@@ -3,12 +3,12 @@ using Microsoft.CodeAnalysis;
 using Project_Manager.BusinessLogic.Services;
 using Project_Manager.BusinessLogic.Services.Interfaces;
 using Project_Manager.DTOs;
+using System.Linq.Dynamic.Core;
 
 namespace Project_Manager.Controllers.Razor
 {
     public class EmployeeMvcController(
         IEmployeeService employeeService,
-        IProjectService projectService,
         IEmployeeOnProjectService employeeOnProjectService
         ) : Controller
     {
@@ -49,6 +49,23 @@ namespace Project_Manager.Controllers.Razor
             var employees = await employeeService.GetAllAsync();
             return View(employees);
         }
+
+        // GET Employee/EmployeesTablePartial
+        [HttpGet]
+        public async Task<IActionResult> EmployeesTablePartial(string sortColumn = "FullName", string sortDirection = "asc")
+        {
+            var employees = await employeeService.GetAllAsync();
+
+            // Use Dynamic LINQ to sort by any column and direction
+            var sortedEmployees = employees.AsQueryable()
+                                 .OrderBy($"{sortColumn} {sortDirection}")
+                                 .ToList();
+
+            ViewData["SortColumn"] = sortColumn;
+            ViewData["SortDirection"] = sortDirection;
+            return PartialView("EmployeesTable", sortedEmployees);
+        }
+
         // GET: Employee/IndexEmployeeProjects/{empId}
         [HttpGet]
         public async Task<IActionResult> IndexEmployeeProjects(int employeeId)

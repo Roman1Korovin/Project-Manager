@@ -5,9 +5,7 @@ using Newtonsoft.Json;
 using Project_Manager.BusinessLogic.Services;
 using Project_Manager.BusinessLogic.Services.Interfaces;
 using Project_Manager.DTOs;
-using Project_Manager.Models.Domain;
-using System.Linq;
-using System.Runtime.Intrinsics.X86;
+using System.Linq.Dynamic.Core;
 
 namespace Project_Manager.Controllers.Razor
 {
@@ -242,7 +240,21 @@ namespace Project_Manager.Controllers.Razor
             var projects = await projectService.GetAllAsync();
             return View(projects);
         }
+        // GET Project/EmployeesTablePartial
+        [HttpGet]
+        public async Task<IActionResult> ProjectsTablePartial(string sortColumn = "Name", string sortDirection = "asc")
+        {
+            var projects = await projectService.GetAllAsync();
 
+            // Use Dynamic LINQ to sort by any column and direction
+            var sortedProjects = projects.AsQueryable()
+                                 .OrderBy($"{sortColumn} {sortDirection}")
+                                 .ToList();
+
+            ViewData["SortColumn"] = sortColumn;
+            ViewData["SortDirection"] = sortDirection;
+            return PartialView("ProjectsTable", sortedProjects);
+        }
         // GET Project/IndexProjectEmployees/{int}
         [HttpGet]
         public async Task<IActionResult> IndexProjectEmployees(int projectId)

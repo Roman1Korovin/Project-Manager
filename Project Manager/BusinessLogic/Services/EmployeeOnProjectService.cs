@@ -62,7 +62,9 @@ namespace Project_Manager.BusinessLogic.Services
                 CustomerCompanyName = e.Project?.CustomerCompany?.Name ?? "неизвестно",
                 ExecutorCompanyName = e.Project?.ExecutorCompany?.Name ?? "неизвестно",
                 ManagerName = e.Project?.Manager?.FullName ?? "неизвестно"
-            }).ToList();
+            })
+                .OrderBy(p => p.ProjectName)
+                .ToList();
         }
 
         public async Task<List<EmployeeInProjectDTO>> GetByProjectIdAsync(int projectId, CancellationToken cancellationToken = default)
@@ -79,7 +81,9 @@ namespace Project_Manager.BusinessLogic.Services
                 ProjectId = e.ProjectId,
                 FullName = e.Employee.FullName,
                 Email = e.Employee.Email
-            }).ToList();
+            })
+                .OrderBy(e => e.FullName)
+                .ToList();
         }
 
         public async Task DeleteByProjectIdAsync(int projectId, CancellationToken cancellationToken = default)

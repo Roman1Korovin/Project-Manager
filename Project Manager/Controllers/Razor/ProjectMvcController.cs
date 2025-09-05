@@ -242,9 +242,49 @@ namespace Project_Manager.Controllers.Razor
         }
         // GET Project/EmployeesTablePartial
         [HttpGet]
-        public async Task<IActionResult> ProjectsTablePartial(string sortColumn = "Name", string sortDirection = "asc")
+        public async Task<IActionResult> ProjectsTablePartial(
+            string sortColumn = "Name",
+            string sortDirection = "asc",
+            string? nameFilter = null,
+            string? customerFilter = null,
+            string? executorFilter = null,
+            string? managerFilter = null,
+            DateTime? startDateFrom = null,
+            DateTime? startDateTo = null,
+            DateTime? endDateFrom = null,
+            DateTime? endDateTo = null,
+            int? priorityFilter = null)
         {
             var projects = await projectService.GetAllAsync();
+
+            // Filter by name
+            if (!string.IsNullOrEmpty(nameFilter))
+                projects = projects.Where(p => p.Name.Contains(nameFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            // Filter by customer
+            if (!string.IsNullOrEmpty(customerFilter))
+                projects = projects.Where(p => p.CustomerName.Contains(customerFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+            // Filter by executor
+            if (!string.IsNullOrEmpty(executorFilter))
+                projects = projects.Where(p => p.ExecutorName.Contains(executorFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+            // Filter by manager
+            if (!string.IsNullOrEmpty(managerFilter))
+                projects = projects.Where(p => p.ManagerName.Contains(managerFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+            // Filter by startDate
+            if (startDateFrom != null)
+                projects = projects.Where(p => p.StartDate >= startDateFrom).ToList();
+            // Filter by startDate
+            if (startDateTo != null)
+                projects = projects.Where(p => p.StartDate <= startDateTo).ToList();
+            // Filter by endDate
+            if (endDateFrom != null)
+                projects = projects.Where(p => p.EndDate >= endDateFrom).ToList();
+            // Filter by endDate
+            if (endDateTo != null)
+                projects = projects.Where(p => p.EndDate <= endDateTo).ToList();
+            // Filter by priority
+            if (priorityFilter != null)
+                projects = projects.Where(p => p.Priority == priorityFilter).ToList();
 
             // Use Dynamic LINQ to sort by any column and direction
             var sortedProjects = projects.AsQueryable()
@@ -255,6 +295,7 @@ namespace Project_Manager.Controllers.Razor
             ViewData["SortDirection"] = sortDirection;
             return PartialView("ProjectsTable", sortedProjects);
         }
+
         // GET Project/IndexProjectEmployees/{int}
         [HttpGet]
         public async Task<IActionResult> IndexProjectEmployees(int projectId)

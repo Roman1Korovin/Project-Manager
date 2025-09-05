@@ -2,50 +2,165 @@
 @model List<ProjectDTO>
 
 @{
-    ViewData["Title"] = "Список проектов";
+    ViewData["Title"] = "Список Проектов";
     ViewData["SortColumn"] = ViewData["SortColumn"] ?? "Name";
     ViewData["SortDirection"] = ViewData["SortDirection"] ?? "asc";
 }
 
 <h2>Список проектов</h2>
 
-<p>
-    <a asp-action="StartWizard" class="btn btn-primary">Добавить проект</a>
-</p>
+<!-- Modal for Project filters -->
+<div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filterModalLabel">Фильтры проектов</h5>
+            </div>
+            <div class="modal-body">
+                <!-- Name filter -->
+                <div class="form-group">
+                    <label for="projectNameFilter">Название проекта</label>
+                    <input type="text" class="form-control mt-2 mb-2" id="projectNameFilter" placeholder="Введите название проекта">
+                </div>
 
+                <!-- Customer Filter -->
+                <div class="form-group">
+                    <label for="customerFilter">Заказчик</label>
+                    <input type="text" class="form-control mt-2 mb-2" id="customerFilter" placeholder="Введите заказчика">
+                </div>
+
+                <!-- Executor filter -->
+                <div class="form-group">
+                    <label for="executorFilter">Исполнитель</label>
+                    <input type="text" class="form-control mt-2 mb-2" id="executorFilter" placeholder="Введите исполнителя">
+                </div>
+
+                <!-- Manager filter -->
+                <div class="form-group">
+                    <label for="managerFilter">Менеджер</label>
+                    <input type="text" class="form-control mt-2 mb-2" id="managerFilter" placeholder="Введите менеджера">
+                </div>
+
+                <!-- StartDate range filters -->
+                <div class="row g-2 mb-2">
+                    <div class="col">
+                        <label for="startDateFrom" class="form-label">Дата начала с</label>
+                        <input type="date" class="form-control" id="startDateFrom">
+                    </div>
+                    <div class="col">
+                        <label for="startDateTo" class="form-label">по</label>
+                        <input type="date" class="form-control" id="startDateTo">
+                    </div>
+                </div>
+                <!-- EndDate range filters -->
+                <div class="row g-2 mb-3">
+                    <div class="col">
+                        <label for="endDateFrom" class="form-label">Дата окончания с</label>
+                        <input type="date" class="form-control" id="endDateFrom">
+                    </div>
+                    <div class="col">
+                        <label for="endDateTo" class="form-label">по</label>
+                        <input type="date" class="form-control" id="endDateTo">
+                    </div>
+                </div>
+
+                <!-- Priority filter -->
+                <div class="form-group mt-2 mb-2">
+                    <label for="priorityFilter">Приоритет</label>
+                    <input type="number" min="1" max="5" class="form-control" id="priorityFilter" placeholder="Введите приоритет">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" id="applyProjectFilters">Применить фильтры</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="d-flex justify-content-between mb-3">
+    <div>
+        <a asp-action="StartWizard" class="btn btn-primary">Добавить проект</a>
+        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#filterModal">Фильтровать</button>
+    </div>
+    <div>
+        <button class="btn btn-outline-danger" id="resetFilters">Сбросить фильтры</button>
+    </div>
+</div>
+
+<!-- TableContainer -->
 <div id = "projectsTableContainer"style="max-height: 500px; overflow-y: auto;">
     @await Html.PartialAsync("ProjectsTable", Model)
 </div>
 
-<!-- AJAX script for sorting  -->
+<!-- AJAX script for sorting and filtering Projects -->
 @section Scripts {
     <script>
-
+        // Current sort column and direction
         let currentSortColumn = '@ViewData["SortColumn"]';
         let currentSortDirection = '@ViewData["SortDirection"]';
 
-        //Tracks clicks on any element with class .sort-link
-        $(document).on('click', '.sort-link', function(e){
-            //Cancels page reload
-            e.preventDefault();
+        // Function to load projects table with current filters and sorting
+        function loadProjects() {
+            //Sends GET request to EmployeesTablePartial
+            $.get('@Url.Action("ProjectsTablePartial")', {
+                sortColumn: currentSortColumn,
+                sortDirection: currentSortDirection,
+                nameFilter: $('#projectNameFilter').val(),
+                customerFilter: $('#customerFilter').val(),
+                executorFilter: $('#executorFilter').val(),
+                managerFilter: $('#managerFilter').val(),
+                startDateFrom: $('#startDateFrom').val(),
+                startDateTo: $('#startDateTo').val(),
+                endDateFrom: $('#endDateFrom').val(),
+                endDateTo: $('#endDateTo').val(),
+                priorityFilter: $('#priorityFilter').val()
+            }, function(data) {
+                $('#projectsTableContainer').html(data); //Changes employeesTableContainer content to new HTML
+                $('#filterModal').modal('hide');  // Hide modal after applying filters
+            });
+        }
 
+        // Click on column header to sort
+        $(document).on('click', '.sort-link', function(e){
+            //Cancel page reload
+            e.preventDefault();
             // Get column from clicked link
             let column = $(this).data('column');
 
-            //If clicked on same column, invert direction.
+            //If clicked on same column, invert direction
             if(column === currentSortColumn){
                 currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
-            } else { //Otherwise sort by new column, default direction is asc
+            } else {    //Otherwise sort by new column, default direction is asc
                 currentSortColumn = column;
                 currentSortDirection = 'asc';
             }
 
-            //Sends GET request to ProtectsTablePartial
-            $.get('@Url.Action("ProjectsTablePartial")',
-                   { sortColumn: currentSortColumn, sortDirection: currentSortDirection },
-                   function(data){
-                       $('#projectsTableContainer').html(data); //Changes projectsTableContainer content to new HTML
-            });
+            loadProjects();
+        });
+
+        // Apply filters button click
+        $('#applyProjectFilters').click(function(){
+            loadProjects();
+        });
+
+        // Reset all filters             
+        $('#resetFilters').click(function() {
+            $('#projectNameFilter').val('');
+            $('#customerFilter').val('');
+            $('#executorFilter').val('');
+            $('#managerFilter').val('');
+            $('#startDateFrom').val('');
+            $('#startDateTo').val('');
+            $('#endDateFrom').val('');
+            $('#endDateTo').val('');
+            $('#priorityFilter').val('');
+
+            currentSortColumn = 'Name';
+            currentSortDirection = 'asc';
+
+            loadProjects();
         });
     </script>
 }

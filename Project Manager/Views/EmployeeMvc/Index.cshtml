@@ -24,25 +24,77 @@
     </div>
 }
 
+<!-- Modal for Employees filter-->
+<div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filterModalLabel">Фильтры сотрудников</h5>
+            </div>
+            <div class="modal-body">
+                <!-- FullName filter -->
+                <div class="form-group">
+                    <label for="nameFilter">ФИО</label>
+                    <input type="text" class="form-control mt-2 mb-2" id="nameFilter" placeholder="Введите имя">
+                </div>
+                <!-- Email filter -->
+                <div class="form-group">
+                    <label for="emailFilter">Email</label>
+                    <input type="text" class="form-control mt-2" id="emailFilter" placeholder="Введите email">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" id="applyFilters">Применить</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Добавить сотрудника</a>
-</p>
+<div class="d-flex justify-content-between mb-3">
+    <div>
+        <a asp-action="Create" class="btn btn-primary">Добавить сотрудника</a>
+        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#filterModal">Фильтровать</button>
+    </div>
+    <div>
+        <button class="btn btn-outline-danger" id="resetFilters">Сбросить фильтры</button>
+    </div>
+</div>
 
+
+<!-- TableContainer -->
 <div id="employeesTableContainer"  style="max-height: 500px; overflow-y: auto;">
     @await Html.PartialAsync("EmployeesTable", Model)
  </div>
 
 
 
-<!-- AJAX script for sorting  -->
+<!-- AJAX script for sorting and filtering Employee -->
 @section Scripts {
     <script>
 
     let currentSortColumn = '@ViewData["SortColumn"]';
     let currentSortDirection = '@ViewData["SortDirection"]';
 
-    //Tracks clicks on any element with class .sort-link
+
+    //Function to load table with current filters and sorting
+    function loadEmployees() {  
+        const nameFilter = $('#nameFilter').val(); 
+        const emailFilter = $('#emailFilter').val();
+
+            //Sends GET request to EmployeesTablePartial
+            $.get('@Url.Action("EmployeesTablePartial")',
+                   { 
+                       sortColumn: currentSortColumn, 
+                       sortDirection: currentSortDirection,
+                       nameFilter: nameFilter,
+                       emailFilter: emailFilter
+                   },  function(data){
+                       $('#employeesTableContainer').html(data); //Changes employeesTableContainer content to new HTML
+                       $('#filterModal').modal('hide'); // Hide modal after applying filters
+            });
+    }
+    // Click on column header to sort
     $(document).on('click', '.sort-link', function(e){
         //Cancels page reload
         e.preventDefault();
@@ -50,20 +102,31 @@
         // Get column from clicked link
         let column = $(this).data('column');
 
-        //If clicked on same column, invert direction.
+        //If clicked on same column, invert direction
         if(column === currentSortColumn){
             currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
         } else { //Otherwise sort by new column, default direction is asc
             currentSortColumn = column;
             currentSortDirection = 'asc';
         }        
+        loadEmployees();
+    });
 
-        //Sends GET request to EmployeesTablePartial
-        $.get('@Url.Action("EmployeesTablePartial")',
-               { sortColumn: currentSortColumn, sortDirection: currentSortDirection },       
-               function(data){
-				   $('#employeesTableContainer').html(data); //Changes employeesTableContainer content to new HTML
-        });
+    //Aply filters button click
+    $('#applyFilters').click(function(){
+        loadEmployees();
+    });
+
+        
+    // Reset all filters
+
+    $('#resetFilters').click(function() {
+        $('#nameFilter').val('');     
+        $('#emailFilter').val('');     
+        currentSortColumn = 'FullName';      
+        currentSortDirection = 'asc';     
+        loadEmployees();
+   
     });
 </script>
 }

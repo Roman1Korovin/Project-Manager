@@ -52,9 +52,18 @@ namespace Project_Manager.Controllers.Razor
 
         // GET Employee/EmployeesTablePartial
         [HttpGet]
-        public async Task<IActionResult> EmployeesTablePartial(string sortColumn = "FullName", string sortDirection = "asc")
+        public async Task<IActionResult> EmployeesTablePartial(string sortColumn = "FullName", string sortDirection = "asc", string? nameFilter = null, string? emailFilter = null)
         {
             var employees = await employeeService.GetAllAsync();
+
+            
+            // Filter by fullName
+            if (!string.IsNullOrEmpty(nameFilter))
+                employees = employees.Where(e => e.FullName.Contains(nameFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            // Filter by email
+            if (!string.IsNullOrEmpty(emailFilter))
+                employees = employees.Where(e => e.Email.Contains(emailFilter, StringComparison.OrdinalIgnoreCase)).ToList();
 
             // Use Dynamic LINQ to sort by any column and direction
             var sortedEmployees = employees.AsQueryable()

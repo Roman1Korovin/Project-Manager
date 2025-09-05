@@ -12,7 +12,7 @@ namespace Project_Manager.BusinessLogic.Services
         IProjectRepository projectRepository
         ): IEmployeeOnProjectService
     {
-        public async Task AddAsync(EmployeeOnProjectDTO dto, CancellationToken cancellationToken = default)
+        public async Task AddAsync(EmployeeOnProjectCreateDTO dto, CancellationToken cancellationToken = default)
         {
             // Check that employee with current Id is exists
             var employee = await employeeRepository.GetByIdAsync(dto.EmployeeId, cancellationToken);
@@ -43,7 +43,7 @@ namespace Project_Manager.BusinessLogic.Services
             await employeeOnProjectRepository.DeleteAsync(eop, cancellationToken);
         }
 
-        public async Task<List<EmployeeOnProjectDTO>> GetByEmployeeIdAsync(int employeeId, CancellationToken cancellationToken = default)
+        public async Task<List<ProjectOfEmployeeDTO>> GetByEmployeeIdAsync(int employeeId, CancellationToken cancellationToken = default)
         {
             // Check that employee with current Id is exists
             var employee = await employeeRepository.GetByIdAsync(employeeId, cancellationToken);
@@ -51,14 +51,21 @@ namespace Project_Manager.BusinessLogic.Services
                 throw new KeyNotFoundException($"Сотрудник с Id {employeeId} не найден.");
 
             var employees = await employeeOnProjectRepository.GetByEmployeeIdAsync(employeeId, cancellationToken);
-            return employees.Select(e => new EmployeeOnProjectDTO
+            return employees.Select(e => new ProjectOfEmployeeDTO
             {
                 EmployeeId = e.EmployeeId,
-                ProjectId = e.ProjectId
+                ProjectId = e.ProjectId,
+                ProjectName = e.Project?.Name ?? "неизвестно",
+                StartDate = e.Project?.StartDate ?? DateTime.MinValue,
+                EndDate = e.Project?.EndDate ?? DateTime.MinValue,
+                Priority = e.Project?.Priority ?? 0,
+                CustomerCompanyName = e.Project?.CustomerCompany?.Name ?? "неизвестно",
+                ExecutorCompanyName = e.Project?.ExecutorCompany?.Name ?? "неизвестно",
+                ManagerName = e.Project?.Manager?.FullName ?? "неизвестно"
             }).ToList();
         }
 
-        public async Task<List<EmployeeOnProjectDTO>> GetByProjectIdAsync(int projectId, CancellationToken cancellationToken = default)
+        public async Task<List<EmployeeInProjectDTO>> GetByProjectIdAsync(int projectId, CancellationToken cancellationToken = default)
         {
             // Check that project with current Id is exists
             var project = await projectRepository.GetByIdAsync(projectId, cancellationToken);
@@ -66,7 +73,7 @@ namespace Project_Manager.BusinessLogic.Services
                 throw new KeyNotFoundException($"Проект с Id {projectId} не найден.");
 
             var projects = await employeeOnProjectRepository.GetByProjectIdAsync(projectId, cancellationToken);
-            return projects.Select(e => new EmployeeOnProjectDTO
+            return projects.Select(e => new EmployeeInProjectDTO
             {
                 EmployeeId = e.EmployeeId,
                 ProjectId = e.ProjectId,

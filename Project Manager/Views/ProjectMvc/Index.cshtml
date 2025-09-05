@@ -11,6 +11,7 @@
     <a asp-action="StartWizard" class="btn btn-primary">Добавить проект</a>
 </p>
 
+<div style="max-height: 500px; overflow-y: auto;">
 <table class="table table-striped table-bordered">
     <thead class="thead-dark">
         <tr>
@@ -42,7 +43,7 @@
                     <td>@project.ExecutorName</td>
                     <td>@project.ManagerName</td>
                     <td class="text-center">
-                        <a asp-action="EmployeesOnProject" asp-route-projectId="@project.Id" title="Сотрудники проекта">
+                        <a asp-action="IndexProjectEmployees" asp-route-projectId="@project.Id" title="Сотрудники проекта">
                             <i class="bi bi-people-fill"></i> 
                         </a>
                     </td>
@@ -69,3 +70,4 @@
         }
     </tbody>
 </table>
+</div>

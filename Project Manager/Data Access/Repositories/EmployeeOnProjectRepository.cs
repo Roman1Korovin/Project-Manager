@@ -21,8 +21,13 @@ namespace Project_Manager.Data_Access.Repositories
         public async  Task<List<EmployeeOnProject>> GetByEmployeeIdAsync(int employeeId, CancellationToken cancellationToken = default)
         {
             return await context.EmployeeOnProjects
-                .Where(ep => ep.EmployeeId == employeeId)
-                .Include(ep => ep.Project)
+                .Where(e => e.EmployeeId == employeeId)
+                .Include(e => e.Project)
+                    .ThenInclude(p => p.CustomerCompany)
+                .Include(e => e.Project)
+                    .ThenInclude(p => p.ExecutorCompany)
+                .Include(e => e.Project)
+                    .ThenInclude(p => p.Manager)
                 .ToListAsync(cancellationToken);
         }
 

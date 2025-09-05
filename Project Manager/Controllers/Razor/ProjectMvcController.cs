@@ -196,7 +196,7 @@ namespace Project_Manager.Controllers.Razor
             //Create Employees On Project
             foreach (var empId in dto.Step4.EmployeeIDs)
             {
-                var empOnProject = new EmployeeOnProjectDTO
+                var empOnProject = new EmployeeOnProjectCreateDTO
                 {
                     ProjectId = project.Id,
                     EmployeeId = empId
@@ -226,7 +226,7 @@ namespace Project_Manager.Controllers.Razor
             await employeeOnProjectService.DeleteByProjectIdAsync(projectId); //Delete old Employees
             foreach (var empId in dto.Step4.EmployeeIDs)
             {
-                var empOnProject = new EmployeeOnProjectDTO
+                var empOnProject = new EmployeeOnProjectCreateDTO
                 {
                     ProjectId = project.Id,
                     EmployeeId = empId
@@ -235,9 +235,17 @@ namespace Project_Manager.Controllers.Razor
             }
         }
 
-        // GET Project/EmployeesByProject/{int}
+        // GET Project/Index
         [HttpGet]
-        public async Task<IActionResult> EmployeesOnProject(int projectId)
+        public async Task<IActionResult> Index()
+        {
+            var projects = await projectService.GetAllAsync();
+            return View(projects);
+        }
+
+        // GET Project/IndexProjectEmployees/{int}
+        [HttpGet]
+        public async Task<IActionResult> IndexProjectEmployees(int projectId)
         {
             var employees = await employeeOnProjectService.GetByProjectIdAsync(projectId);
             var project = await projectService.GetByIdAsync(projectId);
@@ -296,13 +304,7 @@ namespace Project_Manager.Controllers.Razor
             }
         }
 
-        // GET Project/Index
-        [HttpGet]
-        public async Task<IActionResult> Index()
-        {
-            var projects = await projectService.GetAllAsync();
-            return View(projects);
-        }
+
 
 
         // GET Project/Edit/{id}

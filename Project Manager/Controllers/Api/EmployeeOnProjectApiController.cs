@@ -11,7 +11,7 @@ namespace Project_Manager.Controllers.Api
     {
         // POST api/employeeonproject
         [HttpPost]
-        public async Task<IActionResult> AddAsync([FromBody] EmployeeOnProjectDTO dto)
+        public async Task<IActionResult> AddAsync([FromBody] EmployeeOnProjectCreateDTO dto)
         {
             try
             {

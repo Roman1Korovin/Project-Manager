@@ -1,27 +1,33 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
+using Project_Manager.BusinessLogic.Services;
 using Project_Manager.BusinessLogic.Services.Interfaces;
 using Project_Manager.DTOs;
 
 namespace Project_Manager.Controllers.Razor
 {
-    public class EmployeeMvcController(IEmployeeService employeeService) : Controller
+    public class EmployeeMvcController(
+        IEmployeeService employeeService,
+        IProjectService projectService,
+        IEmployeeOnProjectService employeeOnProjectService
+        ) : Controller
     {
         // GET: Employee/Create
         [HttpGet]
         public IActionResult Create()
-        {    
+        {
             return View();
         }
 
         // POST: Employee/Create
         [HttpPost]
-        [ValidateAntiForgeryToken] 
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EmployeeDTO dto)
         {
             try
             {
                 await employeeService.AddAsync(dto);
-                return RedirectToAction("Index"); 
+                return RedirectToAction("Index");
             }
             catch (KeyNotFoundException ex)
             {
@@ -30,9 +36,9 @@ namespace Project_Manager.Controllers.Razor
             }
             catch (Exception ex)
             {
-                
+
                 ModelState.AddModelError(string.Empty, ex.Message);
-                return View(dto); 
+                return View(dto);
             }
         }
 
@@ -41,7 +47,16 @@ namespace Project_Manager.Controllers.Razor
         public async Task<IActionResult> Index()
         {
             var employees = await employeeService.GetAllAsync();
-            return View(employees); 
+            return View(employees);
+        }
+        // GET: Employee/IndexEmployeeProjects/{empId}
+        [HttpGet]
+        public async Task<IActionResult> IndexEmployeeProjects(int employeeId)
+        {
+            var projects = await employeeOnProjectService.GetByEmployeeIdAsync(employeeId);
+            var employee = await employeeService.GetByIdAsync(employeeId);
+            ViewData["EmployeeName"] = employee?.FullName ?? "неизвестный сотрудник";
+            return View(projects);
         }
 
         // GET: Employee/Edit/{int}

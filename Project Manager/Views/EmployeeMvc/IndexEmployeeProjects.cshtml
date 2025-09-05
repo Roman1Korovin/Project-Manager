@@ -1,0 +1,57 @@
+﻿@using Project_Manager.DTOs
+@model List<ProjectOfEmployeeDTO>
+
+@{
+    ViewData["Title"] = "Проекты сотрудника";
+}
+
+<h2>Проекты сотрудника "@ViewData["EmployeeName"]"</h2>
+
+<p>
+    <a asp-action="Index" class="btn btn-secondary">Назад к сотрудникам</a>
+</p>
+
+@if (Model != null && Model.Any())
+{
+    <div style="max-height: 500px; overflow-y: auto;">
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>Название проекта</th>
+                <th>Дата начала</th>
+                <th>Дата окончания</th>
+                <th>Приоритет</th>
+                <th>Заказчик</th>
+                <th>Исполнитель</th>
+                <th>Менеджер</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 1;
+            }
+            @foreach (var project in Model)
+            {
+                <tr>
+                    <td>@index</td>
+                    <td>@project.ProjectName</td>
+                    <td>@project.StartDate.ToShortDateString()</td>
+                    <td>@project.EndDate.ToShortDateString()</td>
+                    <td>@project.Priority</td>
+                    <td>@project.CustomerCompanyName</td>
+                    <td>@project.ExecutorCompanyName</td>
+                    <td>@project.ManagerName</td>
+                </tr>
+                index++;
+            }
+        </tbody>
+    </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        Этот сотрудник пока не участвует ни в одном проекте.
+    </div>
+}

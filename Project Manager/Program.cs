@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Project_Manager.Data_Access.Extensions;
 using Project_Manager.BusinessLogic.Extensions;
+using System;
+using Project_Manager.Data_Access;
 
 
 
@@ -27,6 +29,14 @@ builder.Services.AddSession(options =>
 });
 
 var app = builder.Build();
+
+
+// Automatic database migration
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppContextDB>();
+    db.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

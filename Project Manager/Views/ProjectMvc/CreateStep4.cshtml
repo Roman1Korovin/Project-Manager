@@ -12,13 +12,7 @@
 
     <div class="mb-3">
         <label class="form-label">Выберите сотрудников проекта</label>
-        <select id="employeeSelect" class="form-select">
-            <option value="">-- Выберите сотрудника --</option>
-            @foreach (var employee in (List<EmployeeDTO>)ViewBag.Employees)
-            {
-                <option value="@employee.Id">@employee.FullName</option>
-            }
-        </select>
+        <select id="employeeSelect" style="width:100%"></select>
     </div>
 
     <div class="mb-3">
@@ -44,8 +38,8 @@
 </form>
 
 @section Scripts {
+
     <script>
-        const employeeSelect = document.getElementById("employeeSelect");
         const selectedEmployees = document.getElementById("selectedEmployees");
 
         function addRemoveListener(btn) {
@@ -57,34 +51,59 @@
 
         document.querySelectorAll(".remove-btn").forEach(addRemoveListener);
 
-        employeeSelect.addEventListener("change", function () {
-            const selectedId = this.value;
-            const selectedText = this.options[this.selectedIndex].text;
-            if (!selectedId) return;
+        $(document).ready(function() {
+            $('#employeeSelect').select2({
+                placeholder: "-- Выберите сотрудника --",
+                allowClear: true,
+                ajax: {
+                    url: '@Url.Action("SearchEmployees")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return { term: params.term || '' };
+                    },
+                    processResults: function(data) {
+                        return { results: data };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0,
+                language: {
+                    noResults: function() { 
+                        return "Сотрудники не найдены";
+                    },
+                    searching: function() {
+                        return "Поиск..."
+                    } 
+                } 
+            });
 
-            if ([...selectedEmployees.querySelectorAll("li")].some(li => li.dataset.id === selectedId)) return;
+            $('#employeeSelect').on('select2:select', function(e) {
+                const data = e.params.data;
+                if ([...selectedEmployees.querySelectorAll("li")].some(li => li.dataset.id == data.id)) return;
 
-            const li = document.createElement("li");
-            li.dataset.id = selectedId;
-            li.textContent = selectedText + " ";
+                const li = document.createElement("li");
+                li.dataset.id = data.id;
+                li.textContent = data.text + " ";
 
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "btn btn-sm btn-danger remove-btn";
-            btn.textContent = "x";
-            addRemoveListener(btn);
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "btn btn-sm btn-danger remove-btn";
+                btn.textContent = "x";
+                addRemoveListener(btn);
 
-            li.appendChild(btn);
+                li.appendChild(btn);
 
-            const hiddenInput = document.createElement("input");
-            hiddenInput.type = "hidden";
-            hiddenInput.name = "selectedEmployeeIds";
-            hiddenInput.value = selectedId;
-            li.appendChild(hiddenInput);
+                const hiddenInput = document.createElement("input");
+                hiddenInput.type = "hidden";
+                hiddenInput.name = "selectedEmployeeIds";
+                hiddenInput.value = data.id;
+                li.appendChild(hiddenInput);
 
-            selectedEmployees.appendChild(li);
+                selectedEmployees.appendChild(li);
 
-            this.value = "";
+                $(this).val(null).trigger('change');
+            });
         });
     </script>
 }

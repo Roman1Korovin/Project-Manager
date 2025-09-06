@@ -97,8 +97,7 @@ namespace Project_Manager.Controllers.Razor
         {
 
             var dto = GetWizardFromSession();
-            var employees = await employeeService.GetAllAsync();
-            ViewBag.Employees = new SelectList(employees, "Id", "FullName");
+
             return View(dto.Step3);
         }
 
@@ -111,6 +110,21 @@ namespace Project_Manager.Controllers.Razor
             wizard.Step3 = step3;
             SaveWizardToSession(wizard);
             return RedirectToAction("CreateStep4");
+        }
+
+        // GET Employee/Search (для AJAX автокомплита)
+        [HttpGet]
+        public async Task<IActionResult> SearchEmployees(string term)
+        {
+            var employees = await employeeService.GetAllAsync();
+
+            var filtered = string.IsNullOrWhiteSpace(term)
+                ? employees
+                : employees.Where(e => e.FullName.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList();
+
+            var result = filtered.Select(e => new { id = e.Id, text = e.FullName }).ToList();
+
+            return Json(result);
         }
 
         // GET Project/CreateStep4

@@ -10,9 +10,10 @@
 <form asp-action="CreateStep3" method="post">
     @Html.AntiForgeryToken()
 
+    <!-- Manager Select2 -->
     <div class="mb-3">
         <label asp-for="ManagerID" class="form-label">Руководитель проекта</label>
-        <select asp-for="ManagerID" class="form-select" asp-items="ViewBag.Employees" required>
+        <select asp-for="ManagerID" class="form-select" id="managerSelect" style="width: 100%;" required>
             <option value="">-- Выберите сотрудника --</option>
         </select>
     </div>
@@ -20,3 +21,47 @@
     <button type="submit" class="btn btn-primary">Далее</button>
     <a asp-action="CreateStep2" class="btn btn-secondary">Назад</a>
 </form>
+
+@section Scripts {
+    <!-- Connect Select2 -->
+    <script>
+        $(document).ready(function() {
+            $('#managerSelect').select2({
+                placeholder: "-- Выберите руководителя --",
+                allowClear: true,
+                ajax: {
+                    url: '@Url.Action("SearchEmployees")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return { term: params.term || ''};
+                    },
+                    processResults: function(data) {
+                        return { results: data };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0,
+                language: {
+                    noResults: function() {
+                        return "Сотрудники не найдены";
+                    },
+                    searching: function() {
+                        return "Поиск..."
+                    }
+                }
+            });
+
+            var selectedId = '@Model.ManagerID';
+            if (selectedId) {
+                $.get('@Url.Action("SearchEmployees")', { term: '' }, function(data) {
+                    var employee = data.find(x => x.id == selectedId);
+                    if (employee) {
+                        var option = new Option(employee.text, employee.id, true, true);
+                        $('#managerSelect').append(option).trigger('change');
+                    }
+                });
+            }
+        });
+    </script>
+}

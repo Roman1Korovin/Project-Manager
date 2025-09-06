@@ -36,7 +36,7 @@ namespace TestProject
         public async Task AddAsync_CallsRepositoryAddAsync_WhenDataIsValid()
         {
             // Arrange
-            var dto = new EmployeeOnProjectDTO
+            var dto = new EmployeeOnProjectCreateDTO
             {
                 EmployeeId = 1,
                 ProjectId = 10
@@ -62,7 +62,7 @@ namespace TestProject
         public async Task AddAsync_ThrowsKeyNotFoundException_WhenEmployeeDoesNotExist()
         {
             // Arrange
-            var dto = new EmployeeOnProjectDTO { EmployeeId = 1, ProjectId = 10 };
+            var dto = new EmployeeOnProjectCreateDTO { EmployeeId = 1, ProjectId = 10 };
 
             _employeeRepoMock.Setup(r => r.GetByIdAsync(dto.EmployeeId, It.IsAny<CancellationToken>()))
                              .ReturnsAsync((Employee?)null);
@@ -74,7 +74,7 @@ namespace TestProject
         public async Task AddAsync_ThrowsKeyNotFoundException_WhenProjectDoesNotExist()
         {
             // Arrange
-            var dto = new EmployeeOnProjectDTO { EmployeeId = 1, ProjectId = 10 };
+            var dto = new EmployeeOnProjectCreateDTO { EmployeeId = 1, ProjectId = 10 };
 
             _employeeRepoMock.Setup(r => r.GetByIdAsync(dto.EmployeeId, It.IsAny<CancellationToken>()))
                              .ReturnsAsync(new Employee { Id = dto.EmployeeId });
@@ -176,10 +176,10 @@ namespace TestProject
                             .ReturnsAsync(new Project { Id = projectId });
 
             var eops = new List<EmployeeOnProject>
-    {
-        new EmployeeOnProject { EmployeeId = 10, ProjectId = projectId },
-        new EmployeeOnProject { EmployeeId = 20, ProjectId = projectId }
-    };
+            {
+                 new EmployeeOnProject { EmployeeId = 10, ProjectId = projectId },
+                new EmployeeOnProject { EmployeeId = 20, ProjectId = projectId }
+            };
 
             _eopRepoMock.Setup(r => r.GetByProjectIdAsync(projectId, It.IsAny<CancellationToken>()))
                         .ReturnsAsync(eops);

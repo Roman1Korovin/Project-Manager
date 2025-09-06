@@ -45,8 +45,9 @@ namespace Project_Manager.BusinessLogic.Services
 
         public async Task<List<ProjectOfEmployeeDTO>> GetByEmployeeIdAsync(int employeeId, CancellationToken cancellationToken = default)
         {
-            // Check that employee with current Id is exists
+            
             var employee = await employeeRepository.GetByIdAsync(employeeId, cancellationToken);
+            // Check that employee with current Id is exists
             if (employee == null)
                 throw new KeyNotFoundException($"Сотрудник с Id {employeeId} не найден.");
 
@@ -69,8 +70,9 @@ namespace Project_Manager.BusinessLogic.Services
 
         public async Task<List<EmployeeInProjectDTO>> GetByProjectIdAsync(int projectId, CancellationToken cancellationToken = default)
         {
-            // Check that project with current Id is exists
+            
             var project = await projectRepository.GetByIdAsync(projectId, cancellationToken);
+            // Check that project with current Id is exists
             if (project == null)
                 throw new KeyNotFoundException($"Проект с Id {projectId} не найден.");
 
@@ -79,8 +81,8 @@ namespace Project_Manager.BusinessLogic.Services
             {
                 EmployeeId = e.EmployeeId,
                 ProjectId = e.ProjectId,
-                FullName = e.Employee.FullName,
-                Email = e.Employee.Email
+                FullName = e.Employee?.FullName ?? "неизвестно",
+                Email = e.Employee?.Email ?? "неизвестно",
             })
                 .OrderBy(e => e.FullName)
                 .ToList();

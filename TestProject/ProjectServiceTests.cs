@@ -8,6 +8,7 @@ using Project_Manager.Data_Access.Repositories.Interfaces;
 using Project_Manager.BusinessLogic.Services;
 using Project_Manager.Models.Domain;
 using Project_Manager.DTOs;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace TestProject
 {
@@ -153,30 +154,36 @@ namespace TestProject
         {
             // Arrange
             var projects = new List<Project>
-    {
-        new Project
-        {
-            Id = 1,
-            Name = "Проект A",
-            StartDate = new DateTime(2025, 1, 1),
-            EndDate = new DateTime(2025, 12, 31),
-            Priority = 3,
-            CustomerCompanyID = 10,
-            ExecutorCompanyID = 20,
-            ManagerID = 30
-        },
-        new Project
-        {
-            Id = 2,
-            Name = "Проект B",
-            StartDate = new DateTime(2025, 2, 1),
-            EndDate = new DateTime(2025, 11, 30),
-            Priority = 5,
-            CustomerCompanyID = 11,
-            ExecutorCompanyID = 21,
-            ManagerID = 31
-        }
-    };
+            {
+                new Project
+                {
+                    Id = 1,
+                    Name = "Проект A",
+                    StartDate = new DateTime(2025, 1, 1),
+                    EndDate = new DateTime(2025, 12, 31),
+                    Priority = 3,
+                    CustomerCompanyID = 10,
+                    CustomerCompany = new CustomerCompany { Id = 10, Name = "Customer A" },
+                    ExecutorCompanyID = 20,
+                    ExecutorCompany = new ExecutorCompany { Id = 20, Name = "Executor A" },
+                    ManagerID = 30,
+                    Manager = new Employee { Id = 30, FullName = "Manager A" }
+                },
+                new Project
+                {
+                    Id = 2,
+                    Name = "Проект B",
+                    StartDate = new DateTime(2025, 2, 1),
+                    EndDate = new DateTime(2025, 11, 30),
+                    Priority = 5,
+                    CustomerCompanyID = 11,
+                    CustomerCompany = new CustomerCompany { Id = 11, Name = "CustomeB" },
+                    ExecutorCompanyID = 21,
+                    ExecutorCompany = new ExecutorCompany { Id = 21, Name = "Executor B" },
+                    ManagerID = 31,
+                    Manager = new Employee { Id = 31, FullName = "Manager B" }
+                }
+            };
 
             _projectRepoMock.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>()))
                    .ReturnsAsync(projects);
@@ -193,10 +200,16 @@ namespace TestProject
             Assert.Equal(projects[0].Id, result[0].Id);
             Assert.Equal(projects[0].Name, result[0].Name);
             Assert.Equal(projects[0].Priority, result[0].Priority);
+            Assert.Equal(projects[0].CustomerCompany.Name, result[0].CustomerName);
+            Assert.Equal(projects[0].ExecutorCompany.Name, result[0].ExecutorName);
+            Assert.Equal(projects[0].Manager.FullName, result[0].ManagerName);
 
             Assert.Equal(projects[1].Id, result[1].Id);
             Assert.Equal(projects[1].Name, result[1].Name);
-            Assert.Equal(projects[1].ManagerID, result[1].ManagerID);
+            Assert.Equal(projects[1].Priority, result[1].Priority);
+            Assert.Equal(projects[1].CustomerCompany.Name, result[1].CustomerName);
+            Assert.Equal(projects[1].ExecutorCompany.Name, result[1].ExecutorName);
+            Assert.Equal(projects[1].Manager.FullName, result[1].ManagerName);
 
             _projectRepoMock.Verify(r => r.GetAllAsync(It.IsAny<CancellationToken>()), Times.Once);
         }

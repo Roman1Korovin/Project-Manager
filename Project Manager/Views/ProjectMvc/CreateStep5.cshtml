@@ -5,10 +5,16 @@
     ViewData["Title"] = "Создание проекта - Шаг 5";
 }
 
-<h2>Создание проекта - Шаг 5</h2>
+<h2>Создание проекта - Шаг 5/5</h2>
 
 <form id="step5Form" asp-action="CreateStep5" method="post" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
+
+    <div id="dropZone" class="border border-primary rounded p-4 mb-3 text-center" 
+         style="background-color:#f8f9fa; cursor:pointer;">
+        <p>Перетащите файлы сюда или кликните для выбора</p>
+        <input type="file" id="fileInput" name="Files" multiple hidden />
+    </div>
 
     <div id="fileList" class="mb-3">
         <strong>Выбранные файлы:</strong>
@@ -19,3 +25,67 @@
     <a asp-action="CreateStep4" class="btn btn-secondary">Назад</a>
 </form>
 
+@section Scripts {
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileListUl = document.querySelector('#fileList ul');
+
+        let files = [];
+        // Function of updating the list of selected files on page
+        function updateFileList() {
+            fileListUl.innerHTML = '';
+            files.forEach((file, index) => {
+                const li = document.createElement('li');
+                li.textContent = file.name + ' ';
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn btn-sm btn-danger';
+                removeBtn.textContent = 'x';
+                removeBtn.onclick = () => {
+                    files.splice(index, 1);
+                    updateFileList();
+                };
+
+                li.appendChild(removeBtn);
+                fileListUl.appendChild(li);
+            });
+        }
+
+        // Click on zone to open file selection dialog 
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // Processing file selection dialog
+        fileInput.addEventListener('change', (e) => {
+            files.push(...e.target.files);
+            updateFileList();
+        });
+
+        // Drag & Drop events
+        // Pointing the file at drop zone
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.backgroundColor = '#e9ecef';
+        });
+        //Leaving the file from drop zone 
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.style.backgroundColor = '#f8f9fa';
+        });
+        //Put the file to drop zone 
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.backgroundColor = '#f8f9fa';
+            files.push(...e.dataTransfer.files);
+            updateFileList();
+        });
+
+        // add files to FormData when submitting form 
+        document.getElementById('step5Form').addEventListener('submit', function(e) {
+            const dataTransfer = new DataTransfer();
+            files.forEach(f => dataTransfer.items.add(f));
+            fileInput.files = dataTransfer.files;
+        });
+    </script>
+}

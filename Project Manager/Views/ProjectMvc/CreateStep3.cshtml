@@ -23,26 +23,27 @@
 </form>
 
 @section Scripts {
-    <!-- Connect Select2 -->
     <script>
+        // Event that is triggered when page loads
         $(document).ready(function() {
-            $('#managerSelect').select2({
+            $('#managerSelect').select2({       //Initialize Select2 in the managerSelect field
                 placeholder: "-- Выберите руководителя --",
                 allowClear: true,
+                 // Configure AJAX for dynamic loading of data
                 ajax: {
-                    url: '@Url.Action("SearchEmployees")',
-                    dataType: 'json',
-                    delay: 250,
-                    data: function(params) {
-                        return { term: params.term || ''};
+                    url: '@Url.Action("SearchEmployees")',      //url to fetch data from
+                    dataType: 'json',                           // Expect JSON response
+                    delay: 500,                                 // delay to reduce the number of requests
+                    data: function(params) {                    //send to server
+                        return { term: params.term || ''};      
                     },
-                    processResults: function(data) {
+                    processResults: function(data) {            //get from server
                         return { results: data };
                     },
                     cache: true
                 },
-                minimumInputLength: 0,
-                language: {
+                minimumInputLength: 0, //Search is triggered even if field is empty.
+                language: {    // configure messages
                     noResults: function() {
                         return "Сотрудники не найдены";
                     },
@@ -52,13 +53,14 @@
                 }
             });
 
+            // If manager is already selected (when returning to the step or update)
             var selectedId = '@Model.ManagerID';
             if (selectedId) {
-                $.get('@Url.Action("SearchEmployees")', { term: '' }, function(data) {
+                $.get('@Url.Action("SearchEmployees")', { term: '' }, function(data) {  //AJAX GET request to server SearchEmployees method
                     var employee = data.find(x => x.id == selectedId);
                     if (employee) {
-                        var option = new Option(employee.text, employee.id, true, true);
-                        $('#managerSelect').append(option).trigger('change');
+                        var option = new Option(employee.text, employee.id, true, true); //Create new <option> element for <select>
+                        $('#managerSelect').append(option).trigger('change');   //Add and update <select>
                     }
                 });
             }

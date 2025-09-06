@@ -10,7 +10,6 @@
 
 
 <form id="step1Form" asp-action="CreateStep1" method="post">
-    @* Anti-forgery token *@
     @Html.AntiForgeryToken()
 
 
@@ -37,6 +36,7 @@
     <a asp-action="Index" class="btn btn-secondary">Назад к проектам</a>
 </form>
 
+<!--Script for verifying validity of range of dates -->
 @section Scripts {
     <script>
         document.getElementById("step1Form").addEventListener("submit", function(e) {

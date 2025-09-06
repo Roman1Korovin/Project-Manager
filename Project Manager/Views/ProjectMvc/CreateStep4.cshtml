@@ -42,15 +42,17 @@
     <script>
         const selectedEmployees = document.getElementById("selectedEmployees");
 
+        //Handler for delete button
         function addRemoveListener(btn) {
             btn.addEventListener("click", () => {
                 const li = btn.parentElement;
                 li.remove();
             });
         }
-
+        //For each button that is already there when page loads, enable the delete function
         document.querySelectorAll(".remove-btn").forEach(addRemoveListener);
 
+       // event that is triggered when the page loads
         $(document).ready(function() {
             $('#employeeSelect').select2({
                 placeholder: "-- Выберите сотрудника --",
@@ -58,7 +60,7 @@
                 ajax: {
                     url: '@Url.Action("SearchEmployees")',
                     dataType: 'json',
-                    delay: 250,
+                    delay: 500, 
                     data: function(params) {
                         return { term: params.term || '' };
                     },
@@ -78,30 +80,39 @@
                 } 
             });
 
+             //event that is triggered when user selects employee from list
             $('#employeeSelect').on('select2:select', function(e) {
                 const data = e.params.data;
+
+                 // Check that employee hasn't been selected
                 if ([...selectedEmployees.querySelectorAll("li")].some(li => li.dataset.id == data.id)) return;
 
+                //Creat new <li> element for selected employee
                 const li = document.createElement("li");
                 li.dataset.id = data.id;
                 li.textContent = data.text + " ";
 
+                //Create remove button
                 const btn = document.createElement("button");
                 btn.type = "button";
                 btn.className = "btn btn-sm btn-danger remove-btn";
                 btn.textContent = "x";
                 addRemoveListener(btn);
 
+                 //Add remove button inside <li>
                 li.appendChild(btn);
 
+                // Add hidden input inside <li> element that when form submit, the selected employees are send to server.
                 const hiddenInput = document.createElement("input");
                 hiddenInput.type = "hidden";
                 hiddenInput.name = "selectedEmployeeIds";
                 hiddenInput.value = data.id;
                 li.appendChild(hiddenInput);
 
+                 //Add <li> to container selectedEmployees on page 
                 selectedEmployees.appendChild(li);
 
+                 //Clear #employeeSelect
                 $(this).val(null).trigger('change');
             });
         });

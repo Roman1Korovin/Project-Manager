@@ -81,8 +81,43 @@ namespace Project_Manager.Controllers.Razor
         // POST Project/CreateStep2
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateStep2(Step2DTO step2)
+        public async Task<IActionResult> CreateStep2(Step2DTO step2)
         {
+            // Сheck that existing company has been selected or new one has been inputted
+            if (step2.CustomerCompanyID == null && string.IsNullOrWhiteSpace(step2.NewCustomerCompanyName))
+                ModelState.AddModelError("CustomerCompanyID", "Выберите существующую компанию или введите новую.");
+
+            if (step2.ExecutorCompanyID == null && string.IsNullOrWhiteSpace(step2.NewExecutorCompanyName))
+                ModelState.AddModelError("ExecutorCompanyID", "Выберите существующую компанию или введите новую.");
+
+            if (!ModelState.IsValid)
+            {
+                var customerCompanies = await customerCompanyService.GetAllAsync();
+                var executorCompanies = await executorCompanyService.GetAllAsync();
+
+                ViewBag.CustomerCompanies = new SelectList(customerCompanies, "Id", "Name");
+                ViewBag.ExecutorCompanies = new SelectList(executorCompanies, "Id", "Name");
+
+                return View(step2);
+            }
+
+            // Create new Cunstomer company if new one has been inputted
+            if (!string.IsNullOrWhiteSpace(step2.NewCustomerCompanyName))
+            {
+                var newCustomer = await customerCompanyService.AddAsync(
+                    new CustomerCompanyDTO { Name = step2.NewCustomerCompanyName.Trim() }
+                );
+                step2.CustomerCompanyID = newCustomer.Id;
+            }
+            // Create new Executor company if new one has been inputted
+            if (!string.IsNullOrWhiteSpace(step2.NewExecutorCompanyName))
+            {
+                var newExecutor = await executorCompanyService.AddAsync(
+                    new ExecutorCompanyDTO { Name = step2.NewExecutorCompanyName.Trim() }
+                );
+                step2.ExecutorCompanyID = newExecutor.Id;
+            }
+
             var wizard = GetWizardFromSession();
             wizard.Step2 = step2;
             SaveWizardToSession(wizard);
@@ -90,6 +125,7 @@ namespace Project_Manager.Controllers.Razor
             // Redirect to step 3
             return RedirectToAction("CreateStep3");
         }
+
 
         // GET Project/CreateStep3
         [HttpGet]
@@ -112,7 +148,7 @@ namespace Project_Manager.Controllers.Razor
             return RedirectToAction("CreateStep4");
         }
 
-        // GET Employee/Search (для AJAX автокомплита)
+        // GET Employee/Search 
         [HttpGet]
         public async Task<IActionResult> SearchEmployees(string term)
         {

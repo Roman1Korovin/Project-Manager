@@ -4,7 +4,7 @@ namespace Project_Manager.BusinessLogic.Services.Interfaces
 {
     public interface ICustomerCompanyService
     {
-        Task AddAsync(CustomerCompanyDTO dto, CancellationToken cancellationToken = default);
+        Task<CustomerCompanyDTO> AddAsync(CustomerCompanyDTO dto, CancellationToken cancellationToken = default);
         Task<List<CustomerCompanyDTO>> GetAllAsync(CancellationToken cancellationToken = default);
     }
 }

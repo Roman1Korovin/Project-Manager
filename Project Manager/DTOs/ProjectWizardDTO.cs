@@ -21,6 +21,9 @@
     {
         public int? CustomerCompanyID { get; set; }
         public int? ExecutorCompanyID { get; set; }
+
+        public string? NewCustomerCompanyName { get; set; }
+        public string? NewExecutorCompanyName { get; set; }
     }
 
     public class Step3DTO

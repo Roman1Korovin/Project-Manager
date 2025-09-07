@@ -19,7 +19,7 @@ namespace Project_Manager.BusinessLogic.Services
                 throw new ArgumentException("Названиекомпании заказчика не может превышать 500 символов!", nameof(dto.Name));
         }
 
-        public async Task AddAsync(CustomerCompanyDTO dto, CancellationToken cancellationToken = default)
+        public async Task<CustomerCompanyDTO> AddAsync(CustomerCompanyDTO dto, CancellationToken cancellationToken = default)
         {
             ValidateCustomerCompanyData(dto);
 
@@ -30,6 +30,12 @@ namespace Project_Manager.BusinessLogic.Services
             };
             //Call repository method to add new CustomerCompany
             await customerCompanyRepository.AddAsync(customerCompany, cancellationToken);
+
+            return new CustomerCompanyDTO
+            {
+                Id = customerCompany.Id,
+                Name = customerCompany.Name
+            };
         }
 
         //Returns list of DTO contining only necessary field

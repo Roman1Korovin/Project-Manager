@@ -138,6 +138,8 @@ namespace Project_Manager.Controllers.Razor
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
+            TempData.Remove("ErrorMessage");
+            TempData.Remove("SuccessMessage");
             try
             {
                 await employeeService.DeleteAsync(id);

@@ -7,6 +7,19 @@
     ViewData["SortDirection"] = ViewData["SortDirection"] ?? "asc";
 }
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
 <h2>Список проектов</h2>
 
 <!-- Modal for Project filters -->

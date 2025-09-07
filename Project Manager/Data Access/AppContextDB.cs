@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project_Manager.Models.Domain;
+using System;
 using System.Reflection.Emit;
 
 namespace Project_Manager.Data_Access
@@ -105,6 +106,45 @@ namespace Project_Manager.Data_Access
 
             base.OnModelCreating(modelBuilder);
         }
+    }
 
+    public static class DbInitializer
+    {
+        public static void Seed(this AppContextDB context)
+        {
+
+            if (!context.Employees.Any())
+            {
+                context.Employees.AddRange(
+                    new Employee { FullName = "Соболев Богдан Ильич", Email = "piwekiy_uko29@outlook.com" },
+                    new Employee { FullName = "Семина Алёна Адамовна", Email = "lunini-fugu82@outlook.com" },
+                    new Employee { FullName = "Глебова Анастасия Давидовна", Email = "ful-uridujo67@hotmail.com" },
+                    new Employee { FullName = "Калашникова Варвара Сергеевна", Email = "gajati_genu74@gmail.com" },
+                    new Employee { FullName = "Родионов Вадим Константинович", Email = "sago_wayana67@mail.com" },
+                    new Employee { FullName = "Алексеев Даниил Павлович", Email = "nozara_bama12@hotmail.com" },
+                    new Employee { FullName = "Петрова Кира Даниловна", Email = "fifes-ojosi93@aol.com" },
+                    new Employee { FullName = "Куликов Егор Давидович", Email = "zawer-ihaca54@mail.com" },
+                    new Employee { FullName = "Чернышев Сергей Михайлович", Email = "munumoc_uce37@aol.com" },
+                    new Employee { FullName = "Кондратьев Ярослав Егорович", Email = "zecubu-hiti92@outlook.com" }
+
+                    );
+            }
+            if (!context.CustomerCompanies.Any())
+            {
+                context.CustomerCompanies.AddRange(
+                    new CustomerCompany { Name = "Городская больница 5" },
+                    new CustomerCompany { Name = "База отдыха \"Домовенок\"" }
+                );
+            }
+            if (!context.ExecutorCompanies.Any())
+            {
+                context.ExecutorCompanies.AddRange(
+                    new ExecutorCompany { Name = "Горизонт" },
+                    new ExecutorCompany { Name = "Альфа" },
+                    new ExecutorCompany { Name = "ProProject" }
+                );
+            }
+            context.SaveChanges();
+        }
     }
 }
